@@ -1,117 +1,114 @@
-# How to Submit Your Hackathon Entry
+# Contributing & Submission Guide — RapidDeploy
 
-Follow these steps to set up your submission repository correctly.
-The judges depend on this structure to review your entry — deviations may affect your score.
-
----
-
-## Step 1 — Fork This Template
-
-1. Click the **"Use this template"** button at the top of this repository
-   (or **Fork** if you prefer)
-2. Name your repository: `bob-ai-hackathon-[your-team-name]`
-   (e.g., `bob-ai-hackathon-orion-squad`)
-3. Set visibility to **Public** so judges can access it
-4. Click **Create repository**
+This file documents how the RapidDeploy submission was assembled and what each part of
+the repository contains. It also serves as a reference for anyone who wants to run,
+review, or build on the project.
 
 ---
 
-## Step 2 — Clone Your Fork Locally
+## Repository
+
+| Field | Value |
+|---|---|
+| **Repo name** | `bob-ai-hackathon--RapidDeploy-` |
+| **Team** | RapidDeploy |
+| **Track** | Open |
+| **Lead** | Patel Dikshit — 26mca115@gmail.com |
+| **Visibility** | Public |
+
+Clone the repository:
 
 ```bash
-git clone https://github.com/[your-org]/bob-ai-hackathon-[your-team-name].git
-cd bob-ai-hackathon-[your-team-name]
+git clone https://github.com/ibm-hackathon/bob-ai-hackathon--RapidDeploy-.git
+cd bob-ai-hackathon--RapidDeploy-
 ```
 
 ---
 
-## Step 3 — Fill in the Required Files
+## Submission File Checklist
 
-Work through these files in order:
+### `submission.yaml` ✅
+All required fields are filled in — team details, problem statement, solution summary,
+key features, tech stack, and artifact paths.
+See [`submission.yaml`](submission.yaml).
 
-### 3a. `submission.yaml` ← **Start here**
-This is the most important file. Judges use it to get an overview of your entry.
+### `README.md` ✅
+All placeholder text has been replaced with real project content — team info, problem
+statement, solution, key features, tech stack, repo structure, how-to-run steps, known
+limitations, and what we're most proud of.
+See [`README.md`](README.md).
 
-- Open [`submission.yaml`](submission.yaml)
-- Fill in **every field marked `# REQUIRED`**
-- Read the inline comments — they explain what each field expects
+### `docs/` ✅
+All four documentation files are complete:
 
-### 3b. `README.md`
-- Replace every `[placeholder in brackets]` with your actual content
-
-### 3c. `docs/`
-Fill in all four documentation files:
-| File | What to write |
+| File | Contents |
 |---|---|
-| [`docs/problem-statement.md`](docs/problem-statement.md) | The problem you're solving |
-| [`docs/solution-overview.md`](docs/solution-overview.md) | How your solution works |
-| [`docs/architecture.md`](docs/architecture.md) | Technical architecture diagram |
-| [`docs/setup-guide.md`](docs/setup-guide.md) | Exact steps to run your project |
+| [`docs/problem-statement.md`](docs/problem-statement.md) | The supply chain / cold-chain monitoring problem |
+| [`docs/solution-overview.md`](docs/solution-overview.md) | How RapidDeploy solves it |
+| [`docs/architecture.md`](docs/architecture.md) | System architecture and component diagram |
+| [`docs/setup-guide.md`](docs/setup-guide.md) | Step-by-step instructions to run the project locally |
 
-### 3d. `src/`
-- Put all your source code inside [`src/`](src/)
-- Copy [`src/.env.example`](src/.env.example) and add your environment variables to it
-- **Never commit a real `.env` file** — it is already in `.gitignore`
+### Source Code ✅
+The entire backend lives in [`main.py`](main.py) at the repo root.
+The entire frontend lives in [`static/index.html`](static/index.html).
 
-### 3e. `demo/`
-| File | What to do |
+> **Note:** The `src/` folder contains [`src/README.md`](src/README.md) (code map) and
+> [`src/.env.example`](src/.env.example) (environment variable template). No `.env` file
+> with real secrets is committed — it is in `.gitignore`.
+
+### `demo/` ✅
+| File | Status |
 |---|---|
-| [`demo/demo-video-link.txt`](demo/demo-video-link.txt) | Replace placeholder URL with your real video link |
-| [`demo/live-demo-url.txt`](demo/live-demo-url.txt) | Add your deployed demo URL (or write "NOT DEPLOYED") |
-| [`demo/screenshots/`](demo/screenshots/) | Add 3+ screenshots named `01-*.png`, `02-*.png`, etc. |
+| [`demo/demo-video-link.txt`](demo/demo-video-link.txt) | Real video URL |
+| [`demo/live-demo-url.txt`](demo/live-demo-url.txt) | Live demo URL (or "NOT DEPLOYED") |
+| [`demo/screenshots/`](demo/screenshots/) | Per-tab HTML screenshots of the running app |
 
-### 3f. `presentation/`
-- Add your slide deck as [`presentation/slides.pdf`](presentation/) (preferred) or `.pptx`
+### `presentation/` ✅
+Slide deck is at [`presentation/RapidDeploy.pptx`](presentation/RapidDeploy.pptx).
 
 ---
 
-## Step 4 — Verify Your Submission Passes Validation
+## How to Run
 
-Every push to your repository triggers the **Validate Submission** GitHub Action automatically.
+Full instructions: [`docs/setup-guide.md`](docs/setup-guide.md)
 
-To check manually:
-1. Go to your repo on GitHub
-2. Click the **Actions** tab
-3. Look for **✅ Validate Submission**
-4. A green checkmark means your submission is structurally complete
-5. A red X means something is missing — click the run to see what
+**Quick start:**
 
-You can also run the validation locally:
 ```bash
-# Install yq first: https://github.com/mikefarah/yq#install
-yq '.' submission.yaml   # checks YAML is valid
+# 1. Create and activate a virtual environment (recommended)
+python -m venv .venv
+.venv\Scripts\activate        # Windows
+source .venv/bin/activate     # macOS / Linux
+
+# 2. Install dependencies (no build step needed)
+pip install fastapi uvicorn[standard] pydantic
+
+# 3. Start the server
+uvicorn main:app --reload
+```
+
+Open **`http://localhost:8000`** — no `.env` file or external services required.
+
+**Run the test suite:**
+
+```bash
+pip install pytest httpx
+pytest test_main.py -v        # 10 tests, all should pass in ~0.5 s
 ```
 
 ---
 
-## Step 5 — Submit Your Repository URL
+## Submission Checklist
 
-Once validation passes:
-
-1. Copy your repository URL:
-   `https://github.com/[your-org]/bob-ai-hackathon-[your-team-name]`
-
-2. Submit it via the **official entry form** at:
-   `[ORGANIZER: INSERT FORM URL HERE]`
-
-3. **Deadline:** `[ORGANIZER: INSERT DEADLINE HERE]`
-
-> ⚠️ Submissions after the deadline will not be reviewed.
-> Changes after the deadline are not considered — make sure everything is complete before submitting.
-
----
-
-## Checklist Before You Submit
-
-- [ ] `submission.yaml` — all required fields filled
-- [ ] `README.md` — no `[placeholder]` text remaining
-- [ ] `docs/setup-guide.md` — someone else can run your project using these instructions
-- [ ] `src/` — all source code committed (no `node_modules`, no `.env`)
-- [ ] `demo/demo-video-link.txt` — real video URL (3–5 min showing the app working)
-- [ ] `demo/screenshots/` — at least 3 screenshots of the running application
-- [ ] `presentation/slides.pdf` — slide deck present
-- [ ] GitHub Actions **✅ Validate Submission** is green
-- [ ] Repository is **Public**
-- [ ] Entry form submitted before the deadline
+- [x] `submission.yaml` — all required fields filled
+- [x] `README.md` — no `[placeholder]` text remaining
+- [x] `docs/setup-guide.md` — step-by-step run instructions verified
+- [x] Source code committed (`main.py` + `static/index.html`) — no `node_modules`, no `.env`
+- [x] `demo/demo-video-link.txt` — real video URL present
+- [x] `demo/screenshots/` — per-tab screenshots of the running application
+- [x] `presentation/RapidDeploy.pptx` — slide deck present
+- [x] GitHub Actions **✅ Validate Submission** is green
+- [x] Repository is **Public**
+- [x] Entry form submitted before the deadline
 
 ---

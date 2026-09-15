@@ -1,30 +1,39 @@
-# Presentation
+# Presentation — RapidDeploy
 
-Place your slide deck in this folder.
+Slide deck for the RapidDeploy IBM Hackathon submission.
 
-## Accepted Formats
+## File
 
-  slides.pdf      ← Preferred (universally viewable)
-  slides.pptx     ← Acceptable
-  slides.key      ← Acceptable (macOS Keynote)
+```
+presentation/
+└── RapidDeploy.pptx    ← 15-slide deck (PowerPoint)
+```
 
-Rename your file to `slides.pdf` (or `slides.pptx`) so the evaluation
-pipeline can locate it reliably.
+## Slide Structure
 
-## Recommended Slide Structure (5–8 slides)
+| Slide | Title | Contents |
+|---|---|---|
+| 1 | Title | Project name, tagline, team, hackathon track |
+| 2 | Agenda | Overview of all 15 slides |
+| 3 | Problem Statement | Three critical gaps in cold-chain logistics |
+| 4 | Our Solution | What RapidDeploy built and how it addresses the problem |
+| 5 | System Architecture | Frontend → REST/WebSocket → FastAPI backend → data layer |
+| 6 | Key Features (1 of 2) | IoT telemetry, excursion detection, sortable shipments table |
+| 7 | Key Features (2 of 2) | Disruption tracking, KPI dashboard, live fleet map |
+| 8 | Live Telemetry Tab | WebSocket feed, ECharts line + donut, live feed table |
+| 9 | Active Shipments & Fleet | 10 routes, 15 vehicles, filter & sort capabilities |
+| 10 | Alerts & Disruptions | Alert types, severity filters, 5 disruption events |
+| 11 | Tech Stack | Backend, frontend, IBM technologies, infrastructure |
+| 12 | Demo Walkthrough | Step-by-step guide through all 6 dashboard tabs |
+| 13 | Known Limitations & Future Scope | Current gaps and planned enhancements |
+| 14 | Meet the Team | 4 members with roles and contact emails |
+| 15 | Thank You | Closing slide with run instructions |
 
-  Slide 1: Title — Project name, team name, track
-  Slide 2: Problem — What problem? Who has it? Why does it matter?
-  Slide 3: Solution — What you built in one clear diagram or screenshot
-  Slide 4: Architecture — How the system works technically
-  Slide 5: Demo / Key Feature — Screenshot or flow of your best feature
-  Slide 6: IBM Technologies — Specifically how you used them
-  Slide 7: Results / Impact — What does success look like? Any metrics?
-  Slide 8: Team — Names, roles, what each person built
+## Team
 
-## Tips
-
-- Keep slides visual — diagrams beat bullet points
-- One idea per slide
-- Font size minimum 24pt for readability
-- Do not paste large code blocks into slides — reference the repo instead
+| Name | Role |
+|---|---|
+| Patel Dikshit | Team Lead |
+| Parekh Rudra | Member |
+| Patel Dhruv | Member |
+| Patel Jainil | Member |
