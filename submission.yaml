@@ -9,61 +9,76 @@
 # =============================================================================
 
 team:
-  name: ""                             # REQUIRED — e.g., "Orion Squad"
-  track: ""                            # REQUIRED — one of: AI | DevOps | Sustainability | Open
+  name: "RapidDeploy"                              # REQUIRED — e.g., "Orion Squad"
+  track: "Open"                                    # REQUIRED — one of: AI | DevOps | Sustainability | Open
   lead:
-    name: ""                           # REQUIRED — e.g., "Alice Chen"
-    email: ""                          # REQUIRED — e.g., "alice.chen@ibm.com"
+    name: "Patel Dikshit"                          # REQUIRED — e.g., "Alice Chen"
+    email: "26mca115@gmail.com"                    # REQUIRED — e.g., "alice.chen@ibm.com"
   members:
-    - name: ""                         # REQUIRED — Team member 1
-      email: ""
-    - name: ""                         # Add more members by copying the two lines above
-      email: ""
-    - name: ""
-      email: ""
+    - name: "Parekh Rudra"                         # REQUIRED — Team member 1
+      email: "26mca103@gmail.com"
+    - name: "Patel Dhruv"
+      email: "26mca114@gmail.com"
+    - name: "Patel Jainil"
+      email: "26mca117@gmail.com"
 
 submission:
-  title: ""                            # REQUIRED — Project display name, e.g., "SmartOps Dashboard"
+  title: "RapidDeploy — Supply Chain & Cold-Chain Operations Dashboard"  # REQUIRED
 
-  problem_statement: >                 # REQUIRED — 1-3 sentences. What problem? Who has it?
-    Replace this text with a concise description of the real-world problem
-    your project addresses and who experiences it.
+  problem_statement: >                             # REQUIRED — 1-3 sentences. What problem? Who has it?
+    Supply chain and cold-chain logistics teams struggle to monitor temperature-sensitive
+    shipments in real time, detect IoT excursions before product damage occurs, and correlate
+    fleet idle time, disruption events, and delayed shipments in a single view.
+    Operations managers and fleet coordinators currently rely on disconnected tools,
+    leading to delayed responses to critical events such as reefer failures or port congestion.
 
-  solution_summary: >                  # REQUIRED — 1-3 sentences. What did you build?
-    Replace this text with a clear description of your solution
-    and how it addresses the problem above.
+  solution_summary: >                             # REQUIRED — 1-3 sentences. What did you build?
+    RapidDeploy is a real-time supply chain and cold-chain monitoring dashboard built with
+    FastAPI and a vanilla HTML/JS frontend. It simulates a live IoT sensor network across
+    10 active shipments, streaming temperature and humidity readings over WebSocket every 5 seconds,
+    and surfaces KPI summaries, fleet status, temperature excursion alerts, and supply-chain
+    disruption events — all in a single unified dashboard with sortable tables and live charts.
 
-  key_features:                        # REQUIRED — List 3 to 5 specific features you implemented
-    - ""                               # e.g., "Real-time pipeline anomaly detection using watsonx.ai"
-    - ""
-    - ""
-    - ""                               # optional 4th
-    - ""                               # optional 5th
+  key_features:                                   # REQUIRED — List 3 to 5 specific features
+    - "Real-time IoT telemetry streaming via WebSocket (/ws/telemetry) with live temperature line chart and category donut chart updating every 5 seconds"
+    - "Temperature excursion detection per product category (frozen, refrigerated, pharma, ambient) with automatic alert generation and one-click acknowledgement"
+    - "Interactive Active Shipments table with click-to-sort on 9 columns (ID, product, category, carrier, status, temperature, progress, ETA, excursion)"
+    - "Supply-chain disruption event tracking with impact score bars, affected shipment linkage, and active/resolved filter"
+    - "Aggregated KPI overview with fleet utilisation, idle vehicle count, critical alert count, and 30-second polling refresh"
 
   tech_stack:
-    languages: []                      # REQUIRED — e.g., ["Python", "TypeScript"]
-    frameworks: []                     # e.g., ["FastAPI", "React"]
-    ibm_technologies: []               # e.g., ["watsonx.ai", "IBM Bob", "IBM Cloud Functions"]
-    databases: []                      # e.g., ["PostgreSQL", "Redis"]
-    other: []                          # e.g., ["Docker", "GitHub Actions", "Slack API"]
+    languages: ["Python", "HTML", "CSS", "JavaScript"]
+    frameworks: ["FastAPI", "Pydantic", "pytest", "Leaflet.js", "Apache ECharts"]
+    ibm_technologies: ["IBM Bob"]
+    databases: []
+    other: ["WebSocket", "Uvicorn", "CORS Middleware", "CartoDB tile layer"]
 
-  what_we_are_most_proud_of: >         # Optional but recommended — guides judges to your best work
-    Replace with what aspect of the submission you consider strongest
-    and want judges to pay special attention to.
+  what_we_are_most_proud_of: >                    # Optional but recommended
+    The end-to-end real-time telemetry pipeline: a background asyncio task emits simulated
+    IoT sensor readings every 5 seconds and broadcasts them over WebSocket to all connected
+    clients simultaneously. The Live Telemetry tab pre-seeds itself instantly from the REST API
+    on first open, then seamlessly continues with live WS updates — giving users immediate
+    visibility into the current cold-chain state without waiting for the next push cycle.
+    The sortable shipments table and the clean separation of static seed data (via the
+    refactored _DISRUPTION_SPECS data table) from rendering logic were also highlights.
 
-  known_limitations: >                 # Optional but recommended — be honest about gaps
-    Replace with any known limitations, incomplete features,
-    or shortcuts taken due to time constraints.
+  known_limitations: >                            # Optional but recommended
+    All shipment, fleet, alert, and disruption data is simulated in-memory at startup using
+    a seeded RNG — there is no persistent database or real IoT device integration.
+    The IoT telemetry is randomly generated rather than sourced from actual sensors.
+    Authentication and authorisation are not implemented; all API endpoints are open.
+    The dashboard has been tested on Chrome and Edge; mobile layout is functional but
+    not fully optimised for small screens.
 
 # =============================================================================
 # ARTIFACT LOCATIONS
 # These paths are relative to the repo root. Only change if you moved files.
 # =============================================================================
 artifacts:
-  source_code: "src/"
+  source_code: "main.py"
   setup_guide: "docs/setup-guide.md"
   architecture_doc: "docs/architecture.md"
-  demo_video: "demo/demo-video-link.txt"   # URL to hosted video (YouTube, Loom, Box)
-  live_demo: "demo/live-demo-url.txt"      # URL to deployed demo (optional)
+  demo_video: "demo/demo-video-link.txt"          # URL to hosted video (YouTube, Loom, Box)
+  live_demo: "demo/live-demo-url.txt"             # URL to deployed demo (optional)
   screenshots: "demo/screenshots/"
   presentation: "presentation/"

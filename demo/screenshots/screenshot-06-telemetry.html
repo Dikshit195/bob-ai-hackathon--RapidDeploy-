@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>RapidDeploy — Live Telemetry (Screenshot)</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0d1117;--surface:#161b22;--card:#1c2128;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--accent:#2f81f7;--green:#3fb950;--yellow:#d29922;--red:#f85149;--purple:#a371f7;--teal:#39c5cf;--radius:8px}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,"Segoe UI",system-ui,sans-serif;font-size:14px;line-height:1.5}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:56px;background:var(--surface);border-bottom:1px solid var(--border)}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:16px}
+.status{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted)}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--green)}
+.tab-nav{display:flex;gap:2px;padding:0 24px;background:var(--surface);border-bottom:1px solid var(--border)}
+.tab{padding:10px 18px;border:none;background:transparent;color:var(--muted);font-size:13px;border-bottom:2px solid transparent}
+.tab.active{color:var(--text);border-bottom-color:var(--accent)}
+.main{padding:20px 24px}
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.section-title{font-size:16px;font-weight:600}
+.section-actions{display:flex;gap:10px;align-items:center}
+.refresh-btn{background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:5px 12px;font-size:12px}
+/* KPI row */
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+.kpi-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px}
+.kpi-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
+.kpi-value{font-size:26px;font-weight:700;line-height:1;margin-bottom:3px}
+.kpi-sub{font-size:11px;color:var(--muted)}
+/* Charts row */
+.charts-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.chart-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px}
+.card-title{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:10px}
+/* Line chart mock */
+.line-chart{background:var(--surface);border-radius:6px;height:160px;position:relative;overflow:hidden;padding:8px}
+.line-chart svg{width:100%;height:100%}
+/* Feed */
+.feed-wrap{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);height:280px;overflow-y:auto}
+.feed-item{padding:9px 16px;border-bottom:1px solid var(--border);display:flex;gap:12px;font-size:12px}
+.feed-time{color:var(--muted);white-space:nowrap;min-width:64px}
+.feed-tag{font-weight:600;min-width:64px}
+.feed-msg{flex:1}
+/* donut mock */
+.donut-area{display:flex;align-items:center;gap:16px;padding:4px 0}
+.legend{display:flex;flex-direction:column;gap:5px}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:12px}
+.ldot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <svg width="26" height="26" viewBox="0 0 26 26" fill="none"><rect width="26" height="26" rx="6" fill="#2f81f7"/><path d="M5 18l5-5 4 4 7-9" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    RapidDeploy
+    <span style="font-weight:400;color:var(--muted);font-size:12px">Supply Chain &amp; Cold-Chain Operations</span>
+  </div>
+  <div class="status">
+    <span class="dot"></span>
+    <span style="color:var(--green);font-weight:600">Connected</span>
+    <span style="font-size:11px;color:var(--muted)">Last sync: 14:32:07</span>
+  </div>
+</header>
+<nav class="tab-nav">
+  <button class="tab">Overview</button>
+  <button class="tab">Active Shipments</button>
+  <button class="tab">Fleet Assets</button>
+  <button class="tab">Alerts</button>
+  <button class="tab">Disruptions</button>
+  <button class="tab active">Live Telemetry</button>
+</nav>
+<main class="main">
+  <div class="section-header">
+    <span class="section-title">Live IoT Telemetry Feed</span>
+    <div class="section-actions">
+      <span style="font-size:12px;color:var(--green)">Live · last: 14:32:07</span>
+      <button class="refresh-btn">✕ Clear Feed</button>
+    </div>
+  </div>
+
+  <!-- KPI cards -->
+  <div class="kpi-row">
+    <div class="kpi-card">
+      <div class="kpi-label">Total Readings</div>
+      <div class="kpi-value" style="color:var(--accent)">47</div>
+      <div class="kpi-sub">since page load</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Excursions Detected</div>
+      <div class="kpi-value" style="color:var(--red)">12</div>
+      <div class="kpi-sub">temperature out-of-range</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Active Sensors</div>
+      <div class="kpi-value" style="color:var(--green)">10</div>
+      <div class="kpi-sub">unique shipments seen</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Last Reading</div>
+      <div class="kpi-value" style="color:var(--teal);font-size:20px">SH-007</div>
+      <div class="kpi-sub">10.2°C · pharma</div>
+    </div>
+  </div>
+
+  <!-- Charts row -->
+  <div class="charts-row">
+    <div class="chart-card">
+      <div class="card-title">Real-time Temperature (last 20 readings)</div>
+      <div class="line-chart">
+        <svg viewBox="0 0 400 140" preserveAspectRatio="none">
+          <!-- grid -->
+          <line x1="0" y1="35" x2="400" y2="35" stroke="#30363d" stroke-width="0.5"/>
+          <line x1="0" y1="70" x2="400" y2="70" stroke="#30363d" stroke-width="0.5"/>
+          <line x1="0" y1="105" x2="400" y2="105" stroke="#30363d" stroke-width="0.5"/>
+          <!-- area fill -->
+          <path d="M0,90 L20,80 L40,95 L60,60 L80,85 L100,45 L120,75 L140,55 L160,90 L180,40 L200,70 L220,30 L240,65 L260,50 L280,80 L300,35 L320,60 L340,45 L360,70 L380,50 L400,65 L400,140 L0,140 Z" fill="rgba(47,129,247,0.08)"/>
+          <!-- line -->
+          <path d="M0,90 L20,80 L40,95 L60,60 L80,85 L100,45 L120,75 L140,55 L160,90 L180,40 L200,70 L220,30 L240,65 L260,50 L280,80 L300,35 L320,60 L340,45 L360,70 L380,50 L400,65" fill="none" stroke="#2f81f7" stroke-width="2"/>
+          <!-- dots -->
+          <circle cx="100" cy="45" r="3" fill="#2f81f7"/>
+          <circle cx="220" cy="30" r="3" fill="#f85149"/>
+          <circle cx="300" cy="35" r="3" fill="#f85149"/>
+          <circle cx="400" cy="65" r="3" fill="#2f81f7"/>
+          <!-- axis labels -->
+          <text x="5" y="132" fill="#8b949e" font-size="9">14:31:22</text>
+          <text x="195" y="132" fill="#8b949e" font-size="9">14:31:52</text>
+          <text x="370" y="132" fill="#8b949e" font-size="9">14:32:07</text>
+          <text x="2" y="38" fill="#8b949e" font-size="9">10°C</text>
+          <text x="2" y="73" fill="#8b949e" font-size="9">0°C</text>
+          <text x="2" y="108" fill="#8b949e" font-size="9">-10°C</text>
+        </svg>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="card-title">Readings per Product Category</div>
+      <div class="donut-area">
+        <svg width="120" height="120" viewBox="0 0 120 120">
+          <circle cx="60" cy="60" r="44" fill="none" stroke="#30363d" stroke-width="18"/>
+          <circle cx="60" cy="60" r="44" fill="none" stroke="#2f81f7" stroke-width="18" stroke-dasharray="110 166" stroke-dashoffset="0" transform="rotate(-90 60 60)"/>
+          <circle cx="60" cy="60" r="44" fill="none" stroke="#39c5cf" stroke-width="18" stroke-dasharray="69 207" stroke-dashoffset="-110" transform="rotate(-90 60 60)"/>
+          <circle cx="60" cy="60" r="44" fill="none" stroke="#a371f7" stroke-width="18" stroke-dasharray="55 221" stroke-dashoffset="-179" transform="rotate(-90 60 60)"/>
+          <circle cx="60" cy="60" r="44" fill="none" stroke="#3fb950" stroke-width="18" stroke-dasharray="42 234" stroke-dashoffset="-234" transform="rotate(-90 60 60)"/>
+          <text x="60" y="64" text-anchor="middle" fill="#e6edf3" font-size="13" font-weight="700">47</text>
+        </svg>
+        <div class="legend">
+          <div class="legend-item"><span class="ldot" style="background:#2f81f7"></span><span>Refrigerated — 14</span></div>
+          <div class="legend-item"><span class="ldot" style="background:#39c5cf"></span><span>Frozen — 11</span></div>
+          <div class="legend-item"><span class="ldot" style="background:#a371f7"></span><span>Pharma — 13</span></div>
+          <div class="legend-item"><span class="ldot" style="background:#3fb950"></span><span>Ambient — 9</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Live feed -->
+  <div class="feed-wrap">
+    <div class="feed-item">
+      <span class="feed-time">14:32:07</span>
+      <span class="feed-tag" style="color:var(--red)">[EXCURSION]</span>
+      <span class="feed-msg">SH-007 · Insulin · <strong style="color:var(--red)">10.20°C</strong> · Humidity 63.4% · 🔋78.2% ⚠ EXCURSION</span>
+    </div>
+    <div class="feed-item">
+      <span class="feed-time">14:32:02</span>
+      <span class="feed-tag" style="color:var(--green)">[OK]</span>
+      <span class="feed-msg">SH-004 · Packaged Snacks · <strong style="color:var(--green)">22.10°C</strong> · Humidity 55.8% · 🔋91.3%</span>
+    </div>
+    <div class="feed-item">
+      <span class="feed-time">14:31:57</span>
+      <span class="feed-tag" style="color:var(--red)">[EXCURSION]</span>
+      <span class="feed-msg">SH-003 · Vaccines · <strong style="color:var(--red)">9.80°C</strong> · Humidity 71.2% · 🔋85.6% ⚠ EXCURSION</span>
+    </div>
+    <div class="feed-item">
+      <span class="feed-time">14:31:52</span>
+      <span class="feed-tag" style="color:var(--green)">[OK]</span>
+      <span class="feed-msg">SH-001 · Dairy Products · <strong style="color:var(--green)">4.20°C</strong> · Humidity 48.9% · 🔋82.1%</span>
+    </div>
+    <div class="feed-item">
+      <span class="feed-time">14:31:47</span>
+      <span class="feed-tag" style="color:var(--red)">[EXCURSION]</span>
+      <span class="feed-msg">SH-010 · Seafood · <strong style="color:var(--red)">-11.30°C</strong> · Humidity 82.4% · 🔋39.7% ⚠ EXCURSION</span>
+    </div>
+    <div class="feed-item">
+      <span class="feed-time">14:31:42</span>
+      <span class="feed-tag" style="color:var(--green)">[OK]</span>
+      <span class="feed-msg">SH-005 · Fresh Juice · <strong style="color:var(--green)">5.60°C</strong> · Humidity 61.3% · 🔋74.5%</span>
+    </div>
+    <div class="feed-item">
+      <span class="feed-time">14:31:37</span>
+      <span class="feed-tag" style="color:var(--green)">[OK]</span>
+      <span class="feed-msg">SH-008 · Electronics · <strong style="color:var(--green)">24.10°C</strong> · Humidity 44.7% · 🔋94.2%</span>
+    </div>
+    <div class="feed-item">
+      <span class="feed-time">14:31:32</span>
+      <span class="feed-tag" style="color:var(--red)">[EXCURSION]</span>
+      <span class="feed-msg">SH-002 · Ice Cream · <strong style="color:var(--red)">-12.10°C</strong> · Humidity 58.9% · 🔋62.3% ⚠ EXCURSION</span>
+    </div>
+    <div class="feed-item">
+      <span class="feed-time">14:31:27</span>
+      <span class="feed-tag" style="color:var(--green)">[OK]</span>
+      <span class="feed-msg">SH-009 · Paneer · <strong style="color:var(--green)">3.80°C</strong> · Humidity 67.1% · 🔋68.9%</span>
+    </div>
+    <div class="feed-item">
+      <span class="feed-time">14:31:22</span>
+      <span class="feed-tag" style="color:var(--green)">[OK]</span>
+      <span class="feed-msg">SH-006 · Frozen Vegetables · <strong style="color:var(--green)">-19.20°C</strong> · Humidity 53.6% · 🔋71.4%</span>
+    </div>
+  </div>
+</main>
+</body>
+</html>

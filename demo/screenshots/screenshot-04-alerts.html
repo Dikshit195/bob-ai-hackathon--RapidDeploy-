@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>RapidDeploy — Alerts (Screenshot)</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0d1117;--surface:#161b22;--card:#1c2128;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--accent:#2f81f7;--green:#3fb950;--yellow:#d29922;--red:#f85149;--purple:#a371f7;--teal:#39c5cf;--radius:8px}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,"Segoe UI",system-ui,sans-serif;font-size:14px;line-height:1.5}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:56px;background:var(--surface);border-bottom:1px solid var(--border)}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:16px}
+.status{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted)}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--green)}
+.tab-nav{display:flex;gap:2px;padding:0 24px;background:var(--surface);border-bottom:1px solid var(--border)}
+.tab{padding:10px 18px;border:none;background:transparent;color:var(--muted);font-size:13px;border-bottom:2px solid transparent}
+.tab.active{color:var(--text);border-bottom-color:var(--accent)}
+.main{padding:20px 24px}
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.section-title{font-size:16px;font-weight:600}
+.section-actions{display:flex;gap:10px;align-items:center}
+.filter-select{background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:5px 10px;font-size:12px}
+.refresh-btn{background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:5px 12px;font-size:12px}
+.alert-list{display:flex;flex-direction:column;gap:8px}
+.alert-item{background:var(--card);border-radius:var(--radius);padding:14px 16px;display:flex;align-items:flex-start;gap:14px;border:1px solid var(--border)}
+.alert-icon{font-size:18px;flex-shrink:0;margin-top:2px}
+.alert-body{flex:1}
+.alert-msg{font-size:13px;font-weight:500;margin-bottom:4px}
+.alert-meta{font-size:11px;color:var(--muted)}
+.alert-ack{background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:6px;padding:4px 12px;font-size:11px;flex-shrink:0;cursor:pointer;white-space:nowrap}
+.alert-ack.done{color:var(--green);border-color:var(--green)}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <svg width="26" height="26" viewBox="0 0 26 26" fill="none"><rect width="26" height="26" rx="6" fill="#2f81f7"/><path d="M5 18l5-5 4 4 7-9" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    RapidDeploy
+    <span style="font-weight:400;color:var(--muted);font-size:12px">Supply Chain &amp; Cold-Chain Operations</span>
+  </div>
+  <div class="status">
+    <span class="dot"></span>
+    <span style="color:var(--green);font-weight:600">Connected</span>
+    <span style="font-size:11px;color:var(--muted)">Last sync: 14:32:07</span>
+  </div>
+</header>
+<nav class="tab-nav">
+  <button class="tab">Overview</button>
+  <button class="tab">Active Shipments</button>
+  <button class="tab">Fleet Assets</button>
+  <button class="tab active">Alerts</button>
+  <button class="tab">Disruptions</button>
+  <button class="tab">Live Telemetry</button>
+</nav>
+<main class="main">
+  <div class="section-header">
+    <span class="section-title">Alerts</span>
+    <div class="section-actions">
+      <select class="filter-select"><option>All Severities</option><option>Critical</option><option>Warning</option><option>Info</option></select>
+      <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)"><input type="checkbox"> Unacknowledged only</label>
+      <button class="refresh-btn">↻ Refresh</button>
+    </div>
+  </div>
+  <div class="alert-list">
+    <div class="alert-item" style="border-left:3px solid var(--red)">
+      <div class="alert-icon">🔴</div>
+      <div class="alert-body">
+        <div class="alert-msg">Temp excursion on SH-003: 9.8°C is above maximum (2–8°C) for Vaccines</div>
+        <div class="alert-meta">CRITICAL · temperature_excursion · SH-003 · VH-103 · 8m ago</div>
+      </div>
+      <button class="alert-ack">Acknowledge</button>
+    </div>
+    <div class="alert-item" style="border-left:3px solid var(--red)">
+      <div class="alert-icon">🔴</div>
+      <div class="alert-body">
+        <div class="alert-msg">Temp excursion on SH-007: 10.2°C is above maximum (2–8°C) for Insulin</div>
+        <div class="alert-meta">CRITICAL · temperature_excursion · SH-007 · VH-107 · 14m ago</div>
+      </div>
+      <button class="alert-ack">Acknowledge</button>
+    </div>
+    <div class="alert-item" style="border-left:3px solid var(--red)">
+      <div class="alert-icon">🔴</div>
+      <div class="alert-body">
+        <div class="alert-msg">Temp excursion on SH-010: -11.3°C is below minimum (-25 – -15°C) for Seafood</div>
+        <div class="alert-meta">CRITICAL · temperature_excursion · SH-010 · VH-110 · 21m ago</div>
+      </div>
+      <button class="alert-ack">Acknowledge</button>
+    </div>
+    <div class="alert-item" style="border-left:3px solid var(--yellow)">
+      <div class="alert-icon">🟡</div>
+      <div class="alert-body">
+        <div class="alert-msg">Temp excursion on SH-002: -12.1°C is above maximum (-25 – -15°C) for Ice Cream</div>
+        <div class="alert-meta">WARNING · temperature_excursion · SH-002 · VH-102 · 23m ago</div>
+      </div>
+      <button class="alert-ack">Acknowledge</button>
+    </div>
+    <div class="alert-item" style="border-left:3px solid var(--yellow)">
+      <div class="alert-icon">🟡</div>
+      <div class="alert-body">
+        <div class="alert-msg">Shipment SH-002 (Ice Cream) is delayed — ETA pushed by 2h+</div>
+        <div class="alert-meta">WARNING · shipment_delayed · SH-002 · VH-102 · 45m ago</div>
+      </div>
+      <button class="alert-ack">Acknowledge</button>
+    </div>
+    <div class="alert-item" style="border-left:3px solid var(--yellow)">
+      <div class="alert-icon">🟡</div>
+      <div class="alert-body">
+        <div class="alert-msg">Shipment SH-006 (Frozen Vegetables) is delayed — ETA pushed by 2h+</div>
+        <div class="alert-meta">WARNING · shipment_delayed · SH-006 · VH-106 · 1h ago</div>
+      </div>
+      <button class="alert-ack done" disabled>✓ Acked</button>
+    </div>
+  </div>
+</main>
+</body>
+</html>

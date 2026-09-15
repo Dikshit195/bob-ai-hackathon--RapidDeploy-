@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>RapidDeploy — Overview (Screenshot)</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0d1117;--surface:#161b22;--card:#1c2128;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--accent:#2f81f7;--green:#3fb950;--yellow:#d29922;--red:#f85149;--purple:#a371f7;--teal:#39c5cf;--radius:8px}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,"Segoe UI",system-ui,sans-serif;font-size:14px;line-height:1.5;min-width:900px}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:56px;background:var(--surface);border-bottom:1px solid var(--border)}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:16px}
+.status{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted)}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--green)}
+.tab-nav{display:flex;gap:2px;padding:0 24px;background:var(--surface);border-bottom:1px solid var(--border)}
+.tab{padding:10px 18px;border:none;background:transparent;color:var(--muted);font-size:13px;border-bottom:2px solid transparent}
+.tab.active{color:var(--text);border-bottom-color:var(--accent)}
+.main{padding:20px 24px}
+.kpi-row{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:20px}
+.kpi-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
+.kpi-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
+.kpi-value{font-size:28px;font-weight:700;line-height:1;margin-bottom:4px}
+.kpi-sub{font-size:11px;color:var(--muted)}
+.c-accent{color:var(--accent)}.c-green{color:var(--green)}.c-yellow{color:var(--yellow)}.c-red{color:var(--red)}.c-purple{color:var(--purple)}.c-teal{color:var(--teal)}
+.section-title{font-size:13px;font-weight:600;color:var(--muted);margin-bottom:12px;padding:8px 0;border-bottom:1px solid var(--border)}
+.charts-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.chart-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
+.card-title{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:12px}
+.chart-placeholder{background:var(--surface);border-radius:6px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:12px}
+.map-box{background:var(--surface);border-radius:8px;height:340px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;margin-bottom:16px;border:1px solid var(--border)}
+.map-label{position:absolute;top:12px;left:12px;background:rgba(13,17,23,.85);padding:6px 12px;border-radius:6px;font-size:12px;color:var(--muted)}
+.map-dot{position:absolute;width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,.3)}
+.badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600}
+.badge-green{background:rgba(63,185,80,.15);color:var(--green)}.badge-red{background:rgba(248,81,73,.15);color:var(--red)}
+.badge-accent{background:rgba(47,129,247,.15);color:var(--accent)}
+/* mini bar chart */
+.mini-bar-wrap{display:flex;align-items:flex-end;gap:6px;height:80px;padding-top:8px}
+.mini-bar{border-radius:3px 3px 0 0;min-width:28px;flex:1}
+.mini-bar-label{font-size:10px;color:var(--muted);text-align:center;margin-top:4px}
+/* donut placeholder */
+.donut-wrap{display:flex;align-items:center;gap:20px;padding:8px 0}
+.donut-svg{flex-shrink:0}
+.donut-legend{display:flex;flex-direction:column;gap:6px}
+.legend-item{display:flex;align-items:center;gap:8px;font-size:12px}
+.legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+</style>
+</head>
+<body>
+<!-- Top bar -->
+<header class="topbar">
+  <div class="brand">
+    <svg width="26" height="26" viewBox="0 0 26 26" fill="none"><rect width="26" height="26" rx="6" fill="#2f81f7"/><path d="M5 18l5-5 4 4 7-9" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    RapidDeploy
+    <span style="font-weight:400;color:var(--muted);font-size:12px">Supply Chain &amp; Cold-Chain Operations</span>
+  </div>
+  <div class="status">
+    <span class="dot"></span>
+    <span style="color:var(--green);font-weight:600">Connected</span>
+    <span style="font-size:11px;color:var(--muted)">Last sync: 14:32:07</span>
+  </div>
+</header>
+
+<!-- Tab nav -->
+<nav class="tab-nav">
+  <button class="tab active">Overview</button>
+  <button class="tab">Active Shipments</button>
+  <button class="tab">Fleet Assets</button>
+  <button class="tab">Alerts</button>
+  <button class="tab">Disruptions</button>
+  <button class="tab">Live Telemetry</button>
+</nav>
+
+<main class="main">
+  <!-- KPI row 1 -->
+  <div class="kpi-row">
+    <div class="kpi-card"><div class="kpi-label">Total Shipments</div><div class="kpi-value c-accent">10</div><div class="kpi-sub">all tracked</div></div>
+    <div class="kpi-card"><div class="kpi-label">In Transit</div><div class="kpi-value c-green">5</div><div class="kpi-sub">on schedule</div></div>
+    <div class="kpi-card"><div class="kpi-label">Delayed</div><div class="kpi-value c-yellow">2</div><div class="kpi-sub">shipments</div></div>
+    <div class="kpi-card"><div class="kpi-label">At Risk</div><div class="kpi-value c-red">3</div><div class="kpi-sub">need action</div></div>
+    <div class="kpi-card"><div class="kpi-label">Temp Excursions</div><div class="kpi-value c-red">4</div><div class="kpi-sub">avg 18 min</div></div>
+  </div>
+  <!-- KPI row 2 -->
+  <div class="kpi-row">
+    <div class="kpi-card"><div class="kpi-label">Idle Fleet</div><div class="kpi-value c-yellow">3</div><div class="kpi-sub">of 15 vehicles</div></div>
+    <div class="kpi-card"><div class="kpi-label">Fleet Utilisation</div><div class="kpi-value c-teal">66.7%</div><div class="kpi-sub">active/total</div></div>
+    <div class="kpi-card"><div class="kpi-label">Active Disruptions</div><div class="kpi-value c-purple">4</div><div class="kpi-sub">events</div></div>
+    <div class="kpi-card"><div class="kpi-label">Critical Alerts</div><div class="kpi-value c-red">3</div><div class="kpi-sub">unacknowledged</div></div>
+    <div class="kpi-card" style="background:var(--surface);border:1px dashed var(--border);display:flex;align-items:center;justify-content:center"><span style="font-size:11px;color:var(--muted)">—</span></div>
+  </div>
+
+  <!-- Map -->
+  <div class="chart-card" style="margin-bottom:16px">
+    <div class="card-title">Live Fleet &amp; Cold-Chain Tracking Map</div>
+    <div class="map-box">
+      <div class="map-label">India — 10 active shipment markers</div>
+      <!-- Approximate India outline simulation with SVG -->
+      <svg width="100%" height="100%" viewBox="0 0 700 340" preserveAspectRatio="xMidYMid meet" style="position:absolute;top:0;left:0">
+        <rect width="700" height="340" fill="#161b22"/>
+        <!-- grid lines -->
+        <line x1="0" y1="85" x2="700" y2="85" stroke="#30363d" stroke-width="0.5"/>
+        <line x1="0" y1="170" x2="700" y2="170" stroke="#30363d" stroke-width="0.5"/>
+        <line x1="0" y1="255" x2="700" y2="255" stroke="#30363d" stroke-width="0.5"/>
+        <line x1="175" y1="0" x2="175" y2="340" stroke="#30363d" stroke-width="0.5"/>
+        <line x1="350" y1="0" x2="350" y2="340" stroke="#30363d" stroke-width="0.5"/>
+        <line x1="525" y1="0" x2="525" y2="340" stroke="#30363d" stroke-width="0.5"/>
+        <!-- India rough shape -->
+        <polygon points="290,30 340,28 370,45 400,50 420,80 430,120 415,160 440,190 430,230 400,270 380,310 360,320 340,310 310,280 290,250 270,210 260,170 250,130 255,90 270,60" fill="#1c2128" stroke="#30363d" stroke-width="1.5"/>
+        <!-- Shipment markers -->
+        <circle cx="330" cy="95" r="7" fill="#2f81f7" opacity="0.9"/><text x="340" y="93" fill="#8b949e" font-size="9">SH-001 Mumbai→Delhi</text>
+        <circle cx="370" cy="220" r="7" fill="#f85149" opacity="0.9"/><text x="380" y="218" fill="#8b949e" font-size="9">SH-002 Chennai→Blr ⚠</text>
+        <circle cx="390" cy="155" r="7" fill="#f85149" opacity="0.9"/><text x="400" y="153" fill="#8b949e" font-size="9">SH-003 Kolkata→Hyd ⚠</text>
+        <circle cx="318" cy="135" r="7" fill="#2f81f7" opacity="0.9"/><text x="268" y="133" fill="#8b949e" font-size="9">SH-004 Pune→Mum</text>
+        <circle cx="295" cy="108" r="7" fill="#2f81f7" opacity="0.9"/><text x="245" y="106" fill="#8b949e" font-size="9">SH-005 Ahm→Jaipur</text>
+        <circle cx="335" cy="108" r="7" fill="#d29922" opacity="0.9"/>
+        <circle cx="395" cy="185" r="7" fill="#f85149" opacity="0.9"/>
+        <circle cx="370" cy="195" r="7" fill="#2f81f7" opacity="0.9"/>
+        <circle cx="296" cy="102" r="7" fill="#2f81f7" opacity="0.9"/>
+        <circle cx="322" cy="195" r="7" fill="#f85149" opacity="0.9"/><text x="332" y="193" fill="#8b949e" font-size="9">SH-010 Mum→Goa ⚠</text>
+        <!-- Legend -->
+        <circle cx="20" cy="315" r="5" fill="#2f81f7"/><text x="30" y="319" fill="#8b949e" font-size="10">Normal</text>
+        <circle cx="80" cy="315" r="5" fill="#f85149"/><text x="90" y="319" fill="#8b949e" font-size="10">Excursion</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Charts row 1 -->
+  <div class="charts-row">
+    <div class="chart-card">
+      <div class="card-title">Shipment Status Distribution</div>
+      <div class="donut-wrap">
+        <svg class="donut-svg" width="110" height="110" viewBox="0 0 110 110">
+          <circle cx="55" cy="55" r="40" fill="none" stroke="#30363d" stroke-width="16"/>
+          <circle cx="55" cy="55" r="40" fill="none" stroke="#2f81f7" stroke-width="16" stroke-dasharray="125.6 125.6" stroke-dashoffset="0" transform="rotate(-90 55 55)"/>
+          <circle cx="55" cy="55" r="40" fill="none" stroke="#d29922" stroke-width="16" stroke-dasharray="50.2 201" stroke-dashoffset="-125.6" transform="rotate(-90 55 55)"/>
+          <circle cx="55" cy="55" r="40" fill="none" stroke="#f85149" stroke-width="16" stroke-dasharray="75.4 176.6" stroke-dashoffset="-175.8" transform="rotate(-90 55 55)"/>
+          <text x="55" y="59" text-anchor="middle" fill="#e6edf3" font-size="14" font-weight="700">10</text>
+        </svg>
+        <div class="donut-legend">
+          <div class="legend-item"><span class="legend-dot" style="background:#2f81f7"></span><span>In Transit — 5</span></div>
+          <div class="legend-item"><span class="legend-dot" style="background:#d29922"></span><span>Delayed — 2</span></div>
+          <div class="legend-item"><span class="legend-dot" style="background:#f85149"></span><span>At Risk — 3</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="card-title">Temperature Excursions by Category</div>
+      <div style="padding-top:8px">
+        <div class="mini-bar-wrap">
+          <div style="flex:1;text-align:center">
+            <div style="display:flex;flex-direction:column;align-items:center;gap:2px;height:80px;justify-content:flex-end">
+              <div class="mini-bar" style="background:#3fb950;height:50px;width:32px"></div>
+              <div class="mini-bar" style="background:#f85149;height:20px;width:32px"></div>
+            </div>
+            <div class="mini-bar-label">Frozen</div>
+          </div>
+          <div style="flex:1;text-align:center">
+            <div style="display:flex;flex-direction:column;align-items:center;gap:2px;height:80px;justify-content:flex-end">
+              <div class="mini-bar" style="background:#3fb950;height:40px;width:32px"></div>
+              <div class="mini-bar" style="background:#f85149;height:30px;width:32px"></div>
+            </div>
+            <div class="mini-bar-label">Refrig.</div>
+          </div>
+          <div style="flex:1;text-align:center">
+            <div style="display:flex;flex-direction:column;align-items:center;gap:2px;height:80px;justify-content:flex-end">
+              <div class="mini-bar" style="background:#3fb950;height:55px;width:32px"></div>
+              <div class="mini-bar" style="background:#f85149;height:15px;width:32px"></div>
+            </div>
+            <div class="mini-bar-label">Pharma</div>
+          </div>
+          <div style="flex:1;text-align:center">
+            <div style="display:flex;flex-direction:column;align-items:center;gap:2px;height:80px;justify-content:flex-end">
+              <div class="mini-bar" style="background:#3fb950;height:70px;width:32px"></div>
+            </div>
+            <div class="mini-bar-label">Ambient</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:16px;margin-top:8px;font-size:11px">
+          <span><span style="display:inline-block;width:10px;height:10px;background:#3fb950;border-radius:2px;margin-right:4px"></span>Normal</span>
+          <span><span style="display:inline-block;width:10px;height:10px;background:#f85149;border-radius:2px;margin-right:4px"></span>Excursion</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts row 2 -->
+  <div class="charts-row">
+    <div class="chart-card">
+      <div class="card-title">Fleet Utilisation</div>
+      <div class="donut-wrap">
+        <svg class="donut-svg" width="110" height="110" viewBox="0 0 110 110">
+          <circle cx="55" cy="55" r="40" fill="none" stroke="#30363d" stroke-width="16"/>
+          <circle cx="55" cy="55" r="40" fill="none" stroke="#3fb950" stroke-width="16" stroke-dasharray="167.5 83.7" stroke-dashoffset="0" transform="rotate(-90 55 55)"/>
+          <circle cx="55" cy="55" r="40" fill="none" stroke="#d29922" stroke-width="16" stroke-dasharray="37.7 213.6" stroke-dashoffset="-167.5" transform="rotate(-90 55 55)"/>
+          <circle cx="55" cy="55" r="40" fill="none" stroke="#a371f7" stroke-width="16" stroke-dasharray="12.6 238.6" stroke-dashoffset="-205.2" transform="rotate(-90 55 55)"/>
+          <circle cx="55" cy="55" r="40" fill="none" stroke="#8b949e" stroke-width="16" stroke-dasharray="12.6 238.6" stroke-dashoffset="-217.8" transform="rotate(-90 55 55)"/>
+          <text x="55" y="57" text-anchor="middle" fill="#3fb950" font-size="12" font-weight="700">66.7%</text>
+        </svg>
+        <div class="donut-legend">
+          <div class="legend-item"><span class="legend-dot" style="background:#3fb950"></span><span>Active — 10</span></div>
+          <div class="legend-item"><span class="legend-dot" style="background:#d29922"></span><span>Idle — 3</span></div>
+          <div class="legend-item"><span class="legend-dot" style="background:#a371f7"></span><span>Maintenance — 1</span></div>
+          <div class="legend-item"><span class="legend-dot" style="background:#8b949e"></span><span>Offline — 1</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="card-title">Active Disruptions by Type</div>
+      <div style="padding-top:8px">
+        <div class="mini-bar-wrap" style="height:90px">
+          <div style="flex:1;text-align:center">
+            <div style="display:flex;flex-direction:column;align-items:center;height:70px;justify-content:flex-end">
+              <div class="mini-bar" style="background:#a371f7;height:60px;width:32px"></div>
+            </div>
+            <div class="mini-bar-label">Weather</div>
+          </div>
+          <div style="flex:1;text-align:center">
+            <div style="display:flex;flex-direction:column;align-items:center;height:70px;justify-content:flex-end">
+              <div class="mini-bar" style="background:#a371f7;height:60px;width:32px"></div>
+            </div>
+            <div class="mini-bar-label">Temp</div>
+          </div>
+          <div style="flex:1;text-align:center">
+            <div style="display:flex;flex-direction:column;align-items:center;height:70px;justify-content:flex-end">
+              <div class="mini-bar" style="background:#a371f7;height:60px;width:32px"></div>
+            </div>
+            <div class="mini-bar-label">Port</div>
+          </div>
+          <div style="flex:1;text-align:center">
+            <div style="display:flex;flex-direction:column;align-items:center;height:70px;justify-content:flex-end">
+              <div class="mini-bar" style="background:#a371f7;height:60px;width:32px"></div>
+            </div>
+            <div class="mini-bar-label">Breakdn</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+</body>
+</html>

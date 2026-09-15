@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>RapidDeploy — Disruptions (Screenshot)</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0d1117;--surface:#161b22;--card:#1c2128;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--accent:#2f81f7;--green:#3fb950;--yellow:#d29922;--red:#f85149;--purple:#a371f7;--teal:#39c5cf;--radius:8px}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,"Segoe UI",system-ui,sans-serif;font-size:14px;line-height:1.5}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:56px;background:var(--surface);border-bottom:1px solid var(--border)}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:16px}
+.status{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted)}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--green)}
+.tab-nav{display:flex;gap:2px;padding:0 24px;background:var(--surface);border-bottom:1px solid var(--border)}
+.tab{padding:10px 18px;border:none;background:transparent;color:var(--muted);font-size:13px;border-bottom:2px solid transparent}
+.tab.active{color:var(--text);border-bottom-color:var(--accent)}
+.main{padding:20px 24px}
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.section-title{font-size:16px;font-weight:600}
+.section-actions{display:flex;gap:10px;align-items:center}
+.refresh-btn{background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:5px 12px;font-size:12px}
+.disruption-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:14px}
+.dis-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;display:flex;flex-direction:column;gap:6px}
+.dis-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.dis-title{font-weight:600;font-size:14px}
+.dis-desc{font-size:13px;color:var(--muted);line-height:1.5;margin:6px 0}
+.dis-meta{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--muted)}
+.impact-bar-bg{background:var(--border);border-radius:3px;height:5px;margin:4px 0 2px}
+.impact-bar-fill{height:100%;border-radius:3px}
+.badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600}
+.badge-red{background:rgba(248,81,73,.15);color:var(--red)}
+.badge-muted{background:rgba(139,148,158,.15);color:var(--muted)}
+.badge-teal{background:rgba(57,197,207,.15);color:var(--teal)}
+.badge-yellow{background:rgba(210,153,34,.15);color:var(--yellow)}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <svg width="26" height="26" viewBox="0 0 26 26" fill="none"><rect width="26" height="26" rx="6" fill="#2f81f7"/><path d="M5 18l5-5 4 4 7-9" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    RapidDeploy
+    <span style="font-weight:400;color:var(--muted);font-size:12px">Supply Chain &amp; Cold-Chain Operations</span>
+  </div>
+  <div class="status">
+    <span class="dot"></span>
+    <span style="color:var(--green);font-weight:600">Connected</span>
+    <span style="font-size:11px;color:var(--muted)">Last sync: 14:32:07</span>
+  </div>
+</header>
+<nav class="tab-nav">
+  <button class="tab">Overview</button>
+  <button class="tab">Active Shipments</button>
+  <button class="tab">Fleet Assets</button>
+  <button class="tab">Alerts</button>
+  <button class="tab active">Disruptions</button>
+  <button class="tab">Live Telemetry</button>
+</nav>
+<main class="main">
+  <div class="section-header">
+    <span class="section-title">Supply Chain Disruptions</span>
+    <div class="section-actions">
+      <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)"><input type="checkbox" checked> Active only</label>
+      <button class="refresh-btn">↻ Refresh</button>
+    </div>
+  </div>
+  <div class="disruption-grid">
+    <!-- DIS-001 -->
+    <div class="dis-card" style="border-left:3px solid var(--red)">
+      <div class="dis-header">
+        <div class="dis-title">DIS-001 — North India</div>
+        <span class="badge badge-red">Active</span>
+      </div>
+      <span class="badge badge-teal" style="align-self:flex-start">Weather</span>
+      <div class="dis-desc">Heavy fog and low visibility on NH-44 corridor causing multi-hour delays.</div>
+      <div class="dis-meta">
+        <span>Impact Score: <strong style="color:var(--yellow)">7.5/10</strong></span>
+        <div class="impact-bar-bg"><div class="impact-bar-fill" style="width:75%;background:var(--yellow)"></div></div>
+        <span>Affected: SH-002, SH-006</span>
+        <span>Started: 3h ago</span>
+        <span>Est. Resolution: Jun 16 20:32</span>
+      </div>
+    </div>
+    <!-- DIS-002 -->
+    <div class="dis-card" style="border-left:3px solid var(--red)">
+      <div class="dis-header">
+        <div class="dis-title">DIS-002 — East &amp; South India</div>
+        <span class="badge badge-red">Active</span>
+      </div>
+      <span class="badge badge-red" style="align-self:flex-start">Temp Excursion</span>
+      <div class="dis-desc">Reefer unit malfunctions detected on three pharma/frozen routes; quality at risk.</div>
+      <div class="dis-meta">
+        <span>Impact Score: <strong style="color:var(--red)">9.2/10</strong></span>
+        <div class="impact-bar-bg"><div class="impact-bar-fill" style="width:92%;background:var(--red)"></div></div>
+        <span>Affected: SH-003, SH-007, SH-010</span>
+        <span>Started: 1h 30m ago</span>
+        <span>Est. Resolution: Jun 16 18:32</span>
+      </div>
+    </div>
+    <!-- DIS-003 -->
+    <div class="dis-card" style="border-left:3px solid var(--red)">
+      <div class="dis-header">
+        <div class="dis-title">DIS-003 — Goa Port</div>
+        <span class="badge badge-red">Active</span>
+      </div>
+      <span class="badge badge-yellow" style="align-self:flex-start">Port Congestion</span>
+      <div class="dis-desc">Port congestion delaying seafood shipment clearance by 12+ hours.</div>
+      <div class="dis-meta">
+        <span>Impact Score: <strong style="color:var(--yellow)">6.0/10</strong></span>
+        <div class="impact-bar-bg"><div class="impact-bar-fill" style="width:60%;background:var(--yellow)"></div></div>
+        <span>Affected: SH-010</span>
+        <span>Started: 5h ago</span>
+        <span>Est. Resolution: Jun 17 02:32</span>
+      </div>
+    </div>
+    <!-- DIS-004 -->
+    <div class="dis-card" style="border-left:3px solid var(--red)">
+      <div class="dis-header">
+        <div class="dis-title">DIS-004 — Vellore, Tamil Nadu</div>
+        <span class="badge badge-red">Active</span>
+      </div>
+      <span class="badge badge-red" style="align-self:flex-start">Breakdown</span>
+      <div class="dis-desc">Freezer van VH-102 reported compressor failure; replacement dispatched.</div>
+      <div class="dis-meta">
+        <span>Impact Score: <strong style="color:var(--red)">8.0/10</strong></span>
+        <div class="impact-bar-bg"><div class="impact-bar-fill" style="width:80%;background:var(--red)"></div></div>
+        <span>Affected: SH-002</span>
+        <span>Started: 1h ago</span>
+        <span>Est. Resolution: Jun 15 17:32</span>
+      </div>
+    </div>
+  </div>
+</main>
+</body>
+</html>

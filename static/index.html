@@ -1,0 +1,1716 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RapidDeploy — Supply Chain & Cold-Chain Dashboard</title>
+
+  <!-- Apache ECharts (CDN) -->
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <style>
+    #map {
+      width: 100%;
+      height: 450px;
+      /* Required: Leaflet will not render without an explicit height */
+      border-radius: 8px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── Reset & base ─────────────────────────────────────────────────── */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --card: #1c2128;
+      --border: #30363d;
+      --text: #e6edf3;
+      --muted: #8b949e;
+      --accent: #2f81f7;
+      --green: #3fb950;
+      --yellow: #d29922;
+      --red: #f85149;
+      --purple: #a371f7;
+      --teal: #39c5cf;
+      --radius: 8px;
+      --font: -apple-system, "Segoe UI", system-ui, sans-serif;
+    }
+
+    html,
+    body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    button {
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 13px;
+    }
+
+    /* ── Layout ───────────────────────────────────────────────────────── */
+    .layout {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* ── Top bar ──────────────────────────────────────────────────────── */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      height: 56px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .topbar-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 16px;
+    }
+
+    .topbar-brand svg {
+      flex-shrink: 0;
+    }
+
+    .topbar-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.4;
+      }
+    }
+
+    .last-updated {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    /* ── Tab nav ──────────────────────────────────────────────────────── */
+    .tab-nav {
+      display: flex;
+      gap: 2px;
+      padding: 0 24px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .tab-btn {
+      padding: 10px 18px;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      font-size: 13px;
+      border-bottom: 2px solid transparent;
+      transition: color 0.15s, border-color 0.15s;
+    }
+
+    .tab-btn.active {
+      color: var(--text);
+      border-bottom-color: var(--accent);
+    }
+
+    .tab-btn:hover:not(.active) {
+      color: var(--text);
+    }
+
+    /* ── Main content ─────────────────────────────────────────────────── */
+    .main {
+      flex: 1;
+      padding: 20px 24px;
+      overflow-y: auto;
+    }
+
+    .tab-panel {
+      display: none;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    /* ── KPI row ──────────────────────────────────────────────────────── */
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    /* Overview KPI row: exactly 5 columns so cards never wrap more than 2 rows */
+    #kpiRow {
+      grid-template-columns: repeat(5, 1fr);
+    }
+
+    @media (max-width: 900px) {
+      #kpiRow { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    @media (max-width: 560px) {
+      #kpiRow { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    .kpi-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .kpi-label {
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .kpi-value {
+      font-size: 28px;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .kpi-sub {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .kpi-green {
+      color: var(--green);
+    }
+
+    .kpi-yellow {
+      color: var(--yellow);
+    }
+
+    .kpi-red {
+      color: var(--red);
+    }
+
+    .kpi-accent {
+      color: var(--accent);
+    }
+
+    .kpi-purple {
+      color: var(--purple);
+    }
+
+    .kpi-teal {
+      color: var(--teal);
+    }
+
+    /* ── Charts row ───────────────────────────────────────────────────── */
+    .charts-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    @media (max-width: 860px) {
+      .charts-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .chart-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+    }
+
+    .card-title {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: var(--text);
+    }
+
+    .chart-box {
+      width: 100%;
+      height: 220px;
+    }
+
+    /* ── Section header ───────────────────────────────────────────────── */
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .section-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .filter-select {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 6px;
+      padding: 5px 10px;
+      font-size: 12px;
+    }
+
+    .refresh-btn {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 5px 14px;
+      font-size: 12px;
+    }
+
+    .refresh-btn:hover {
+      opacity: 0.85;
+    }
+
+    /* ── Tables ───────────────────────────────────────────────────────── */
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    thead tr {
+      background: var(--surface);
+    }
+
+    th {
+      padding: 10px 14px;
+      text-align: left;
+      font-weight: 600;
+      color: var(--muted);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+    }
+
+    th[data-col] {
+      cursor: pointer;
+      user-select: none;
+    }
+    th[data-col]:hover {
+      color: var(--text);
+    }
+    th[data-col]::after {
+      content: ' ⇅';
+      opacity: 0.35;
+      font-size: 10px;
+    }
+    th[data-col].sort-asc::after  { content: ' ↑'; opacity: 1; color: var(--accent); }
+    th[data-col].sort-desc::after { content: ' ↓'; opacity: 1; color: var(--accent); }
+
+    td {
+      padding: 10px 14px;
+      border-top: 1px solid var(--border);
+      vertical-align: middle;
+    }
+
+    tbody tr:hover {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    /* ── Badges ───────────────────────────────────────────────────────── */
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .badge-green {
+      background: rgba(63, 185, 80, .15);
+      color: var(--green);
+    }
+
+    .badge-yellow {
+      background: rgba(210, 153, 34, .15);
+      color: var(--yellow);
+    }
+
+    .badge-red {
+      background: rgba(248, 81, 73, .15);
+      color: var(--red);
+    }
+
+    .badge-accent {
+      background: rgba(47, 129, 247, .15);
+      color: var(--accent);
+    }
+
+    .badge-purple {
+      background: rgba(163, 113, 247, .15);
+      color: var(--purple);
+    }
+
+    .badge-muted {
+      background: rgba(139, 148, 158, .15);
+      color: var(--muted);
+    }
+
+    .badge-teal {
+      background: rgba(57, 197, 207, .15);
+      color: var(--teal);
+    }
+
+    /* ── Temp bar ─────────────────────────────────────────────────────── */
+    .temp-cell {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .temp-value {
+      font-weight: 600;
+      min-width: 52px;
+    }
+
+    .temp-bar-bg {
+      flex: 1;
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      min-width: 60px;
+    }
+
+    .temp-bar-fill {
+      height: 100%;
+      border-radius: 2px;
+      transition: width 0.4s;
+    }
+
+    /* ── Progress bar ─────────────────────────────────────────────────── */
+    .progress-bg {
+      background: var(--border);
+      border-radius: 3px;
+      height: 6px;
+      min-width: 80px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: 3px;
+      background: var(--accent);
+      transition: width 0.4s;
+    }
+
+    /* ── Alert list ───────────────────────────────────────────────────── */
+    .alert-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .alert-item {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px 16px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .alert-icon {
+      font-size: 18px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .alert-body {
+      flex: 1;
+    }
+
+    .alert-msg {
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .alert-meta {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 3px;
+    }
+
+    .alert-ack {
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--muted);
+      border-radius: 6px;
+      padding: 3px 10px;
+      font-size: 11px;
+      flex-shrink: 0;
+    }
+
+    .alert-ack:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .alert-ack.done {
+      color: var(--green);
+      border-color: var(--green);
+    }
+
+    /* ── Telemetry feed ───────────────────────────────────────────────── */
+    .feed-wrap {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      height: 360px;
+      overflow-y: auto;
+      padding: 0;
+    }
+
+    .feed-item {
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      font-size: 12px;
+      animation: fadein 0.3s ease;
+    }
+
+    @keyframes fadein {
+      from {
+        opacity: 0;
+        transform: translateY(-4px);
+      }
+
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+    .feed-time {
+      color: var(--muted);
+      white-space: nowrap;
+      min-width: 60px;
+    }
+
+    .feed-tag {
+      font-weight: 600;
+      min-width: 60px;
+    }
+
+    .feed-msg {
+      flex: 1;
+    }
+
+    /* ── Disruption cards ─────────────────────────────────────────────── */
+    .disruption-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 12px;
+    }
+
+    .dis-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+    }
+
+    .dis-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .dis-title {
+      font-weight: 600;
+      font-size: 13px;
+    }
+
+    .dis-desc {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.5;
+      margin-bottom: 10px;
+    }
+
+    .dis-meta {
+      font-size: 11px;
+      color: var(--muted);
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .impact-bar-bg {
+      background: var(--border);
+      border-radius: 3px;
+      height: 5px;
+      margin: 6px 0 2px;
+    }
+
+    .impact-bar-fill {
+      height: 100%;
+      border-radius: 3px;
+    }
+
+    /* ── Fleet map placeholder ────────────────────────────────────────── */
+    .fleet-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 12px;
+    }
+
+    .fleet-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .fleet-vh {
+      font-weight: 700;
+      font-size: 15px;
+    }
+
+    .fleet-type {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .fleet-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+    }
+
+    .fleet-key {
+      color: var(--muted);
+    }
+
+    .fuel-bar-bg {
+      background: var(--border);
+      border-radius: 2px;
+      height: 4px;
+      flex: 1;
+      margin-left: 8px;
+    }
+
+    .fuel-bar-fill {
+      height: 100%;
+      border-radius: 2px;
+      transition: width 0.4s;
+    }
+
+    /* ── Empty state ──────────────────────────────────────────────────── */
+    .empty {
+      text-align: center;
+      padding: 40px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    /* ── Loader ───────────────────────────────────────────────────────── */
+    .spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .loading-row {
+      display: flex;
+      justify-content: center;
+      padding: 32px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="layout">
+
+    <!-- ── Top bar ───────────────────────────────────────────────────────── -->
+    <header class="topbar">
+      <div class="topbar-brand">
+        <svg width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="26" height="26" rx="6" fill="#2f81f7" />
+          <path d="M5 18l5-5 4 4 7-9" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        RapidDeploy
+        <span style="font-weight:400;color:var(--muted);font-size:12px;">Supply Chain &amp; Cold-Chain Operations</span>
+      </div>
+      <div class="topbar-status">
+        <span class="dot" id="wsDot" style="background:var(--muted)"></span>
+        <span id="wsLabel">Connecting…</span>
+        <span class="last-updated">Last sync: <span id="lastSync">—</span></span>
+      </div>
+    </header>
+
+    <!-- ── Tab nav ───────────────────────────────────────────────────────── -->
+    <nav class="tab-nav">
+      <button class="tab-btn active" data-tab="overview">Overview</button>
+      <button class="tab-btn" data-tab="shipments">Active Shipments</button>
+      <button class="tab-btn" data-tab="fleet">Fleet Assets</button>
+      <button class="tab-btn" data-tab="alerts">Alerts</button>
+      <button class="tab-btn" data-tab="disruptions">Disruptions</button>
+      <button class="tab-btn" data-tab="telemetry">Live Telemetry</button>
+    </nav>
+
+    <!-- ── Main ──────────────────────────────────────────────────────────── -->
+    <main class="main">
+
+      <!-- ── OVERVIEW ── -->
+      <div class="tab-panel active" id="tab-overview">
+        <div class="kpi-row" id="kpiRow">
+          <div class="loading-row" style="grid-column:1/-1">
+            <div class="spinner"></div>
+          </div>
+        </div>
+
+        <div class="chart-card" style="margin-bottom: 12px;">
+          <div class="card-title">Live Fleet & Cold-Chain Tracking Map</div>
+          <div id="map" style="height: 450px; width: 100%; border-radius: 8px;"></div>
+        </div>
+
+        <!-- Row 1: 50% Left Graph | 50% Right Graph -->
+        <div class="charts-row">
+          <div class="chart-card">
+            <div class="card-title">Shipment Status Distribution</div>
+            <div class="chart-box" id="chartStatus"></div>
+          </div>
+          <div class="chart-card">
+            <div class="card-title">Temperature Excursions by Category</div>
+            <div class="chart-box" id="chartExcursion"></div>
+          </div>
+        </div>
+
+        <!-- Row 2: 50% Left Graph | 50% Right Graph -->
+        <div class="charts-row">
+          <div class="chart-card">
+            <div class="card-title">Fleet Utilisation</div>
+            <div class="chart-box" id="chartFleet"></div>
+          </div>
+          <div class="chart-card">
+            <div class="card-title">Active Disruptions by Type</div>
+            <div class="chart-box" id="chartDisruption"></div>
+          </div>
+        </div>
+
+      </div><!-- /#tab-overview -->
+
+      <!-- ── SHIPMENTS ── -->
+      <div class="tab-panel" id="tab-shipments">
+        <div class="section-header">
+          <span class="section-title">Active Shipments</span>
+          <div class="section-actions">
+            <select class="filter-select" id="shipFilter">
+              <option value="">All Statuses</option>
+              <option value="in_transit">In Transit</option>
+              <option value="delayed">Delayed</option>
+              <option value="at_risk">At Risk</option>
+            </select>
+            <select class="filter-select" id="catFilter">
+              <option value="">All Categories</option>
+              <option value="refrigerated">Refrigerated</option>
+              <option value="frozen">Frozen</option>
+              <option value="pharma">Pharma</option>
+              <option value="ambient">Ambient</option>
+            </select>
+            <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)">
+              <input type="checkbox" id="excursionOnly"> Excursion only
+            </label>
+            <button class="refresh-btn" onclick="loadShipments()">↻ Refresh</button>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table id="shipmentsTable">
+            <thead>
+              <tr>
+                <th data-col="shipment_id">ID</th>
+                <th data-col="product_name">Product</th>
+                <th data-col="product_category">Category</th>
+                <th>Route</th>
+                <th data-col="carrier">Carrier</th>
+                <th data-col="status">Status</th>
+                <th data-col="temperature_c">Temperature</th>
+                <th data-col="route_progress_pct">Progress</th>
+                <th data-col="eta">ETA</th>
+                <th data-col="temp_excursion">Excursion</th>
+              </tr>
+            </thead>
+            <tbody id="shipmentsBody">
+              <tr>
+                <td colspan="10">
+                  <div class="loading-row">
+                    <div class="spinner"></div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div><!-- /#tab-shipments -->
+
+      <!-- ── FLEET ── -->
+      <div class="tab-panel" id="tab-fleet">
+        <div class="section-header">
+          <span class="section-title">Fleet Assets</span>
+          <div class="section-actions">
+            <select class="filter-select" id="fleetFilter">
+              <option value="">All Statuses</option>
+              <option value="active">Active</option>
+              <option value="idle">Idle</option>
+              <option value="maintenance">Maintenance</option>
+              <option value="offline">Offline</option>
+            </select>
+            <button class="refresh-btn" onclick="loadFleet()">↻ Refresh</button>
+          </div>
+        </div>
+        <div class="fleet-grid" id="fleetGrid">
+          <div class="loading-row" style="grid-column:1/-1">
+            <div class="spinner"></div>
+          </div>
+        </div>
+      </div><!-- /#tab-fleet -->
+
+      <!-- ── ALERTS ── -->
+      <div class="tab-panel" id="tab-alerts">
+        <div class="section-header">
+          <span class="section-title">Alerts</span>
+          <div class="section-actions">
+            <select class="filter-select" id="alertFilter">
+              <option value="">All Severities</option>
+              <option value="critical">Critical</option>
+              <option value="warning">Warning</option>
+              <option value="info">Info</option>
+            </select>
+            <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)">
+              <input type="checkbox" id="unackOnly"> Unacknowledged only
+            </label>
+            <button class="refresh-btn" onclick="loadAlerts()">↻ Refresh</button>
+          </div>
+        </div>
+        <div class="alert-list" id="alertList">
+          <div class="loading-row">
+            <div class="spinner"></div>
+          </div>
+        </div>
+      </div><!-- /#tab-alerts -->
+
+      <!-- ── DISRUPTIONS ── -->
+      <div class="tab-panel" id="tab-disruptions">
+        <div class="section-header">
+          <span class="section-title">Supply Chain Disruptions</span>
+          <div class="section-actions">
+            <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)">
+              <input type="checkbox" id="activeDisOnly" checked> Active only
+            </label>
+            <button class="refresh-btn" onclick="loadDisruptions()">↻ Refresh</button>
+          </div>
+        </div>
+        <div class="disruption-grid" id="disruptionGrid">
+          <div class="loading-row" style="grid-column:1/-1">
+            <div class="spinner"></div>
+          </div>
+        </div>
+      </div><!-- /#tab-disruptions -->
+
+      <!-- ── TELEMETRY ── -->
+      <div class="tab-panel" id="tab-telemetry">
+        <div class="section-header">
+          <span class="section-title">Live IoT Telemetry Feed</span>
+          <div class="section-actions">
+            <span style="font-size:12px;color:var(--muted)" id="telWsStatus">Waiting for WebSocket…</span>
+            <button class="refresh-btn" id="clearFeedBtn" onclick="clearFeed()">✕ Clear Feed</button>
+          </div>
+        </div>
+
+        <!-- Stats summary row -->
+        <div class="kpi-row" id="telKpiRow" style="margin-bottom:16px;">
+          <div class="kpi-card">
+            <div class="kpi-label">Total Readings</div>
+            <div class="kpi-value kpi-accent" id="telTotal">0</div>
+            <div class="kpi-sub">since page load</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Excursions Detected</div>
+            <div class="kpi-value kpi-red" id="telExcursions">0</div>
+            <div class="kpi-sub">temperature out-of-range</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Active Sensors</div>
+            <div class="kpi-value kpi-green" id="telSensors">0</div>
+            <div class="kpi-sub">unique shipments seen</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Last Reading</div>
+            <div class="kpi-value kpi-teal" id="telLastShip">—</div>
+            <div class="kpi-sub" id="telLastTemp">—</div>
+          </div>
+        </div>
+
+        <!-- Live charts row -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+          <div class="chart-card">
+            <div class="card-title">Real-time Temperature (last 20 readings)</div>
+            <div class="chart-box" id="chartTempLive"></div>
+          </div>
+          <div class="chart-card">
+            <div class="card-title">Readings per Product Category</div>
+            <div class="chart-box" id="chartCatLive"></div>
+          </div>
+        </div>
+
+        <!-- Feed list with waiting placeholder -->
+        <div class="feed-wrap" id="feedWrap">
+          <div id="feedPlaceholder" style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--muted);font-size:13px;gap:10px;">
+            <div class="spinner"></div>
+            Waiting for live readings — WebSocket pushes every 5 s…
+          </div>
+        </div>
+      </div><!-- /#tab-telemetry -->
+
+    </main>
+  </div>
+
+  <script>
+    /* ══════════════════════════════════════════════════════════════════════════
+       Config & utilities
+    ═══════════════════════════════════════════════════════════════════════════*/
+    const API = '';   // same-origin; set to "http://localhost:8000" for dev
+
+    async function apiFetch(path) {
+      const r = await fetch(API + path);
+      if (!r.ok) throw new Error(await r.text());
+      return r.json();
+    }
+
+    function fmtTime(iso) {
+      const d = new Date(iso);
+      return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+    function fmtDate(iso) {
+      const d = new Date(iso);
+      return d.toLocaleDateString([], { month: 'short', day: 'numeric' }) + ' ' + fmtTime(iso);
+    }
+    function timeSince(iso) {
+      const s = Math.floor((Date.now() - new Date(iso)) / 1000);
+      if (s < 60) return s + 's ago';
+      if (s < 3600) return Math.floor(s / 60) + 'm ago';
+      return Math.floor(s / 3600) + 'h ago';
+    }
+
+    const THRESHOLDS = {
+      frozen: { min: -25, max: -15 },
+      refrigerated: { min: 2, max: 8 },
+      ambient: { min: 15, max: 30 },
+      pharma: { min: 2, max: 8 },
+    };
+
+    function tempColor(t, cat) {
+      const th = THRESHOLDS[cat] || { min: 0, max: 30 };
+      if (t < th.min || t > th.max) return 'var(--red)';
+      const margin = (th.max - th.min) * 0.15;
+      if (t < th.min + margin || t > th.max - margin) return 'var(--yellow)';
+      return 'var(--green)';
+    }
+
+    function tempBarWidth(t, cat) {
+      const th = THRESHOLDS[cat] || { min: -30, max: 40 };
+      const pct = ((t - th.min) / (th.max - th.min)) * 100;
+      return Math.min(100, Math.max(0, pct));
+    }
+
+    function statusBadge(s) {
+      const map = {
+        in_transit: ['accent', 'In Transit'],
+        delayed: ['yellow', 'Delayed'],
+        at_risk: ['red', 'At Risk'],
+        delivered: ['green', 'Delivered'],
+      };
+      const [cls, label] = map[s] || ['muted', s];
+      return `<span class="badge badge-${cls}">${label}</span>`;
+    }
+
+    function fleetStatusBadge(s) {
+      const map = {
+        active: ['green', 'Active'],
+        idle: ['yellow', 'Idle'],
+        maintenance: ['purple', 'Maintenance'],
+        offline: ['muted', 'Offline'],
+      };
+      const [cls, label] = map[s] || ['muted', s];
+      return `<span class="badge badge-${cls}">${label}</span>`;
+    }
+
+    function severityIcon(s) {
+      return { critical: '🔴', warning: '🟡', info: '🔵' }[s] || '⚪';
+    }
+
+    function disruptionBadge(type) {
+      const labels = {
+        weather: ['teal', 'Weather'],
+        port_congestion: ['yellow', 'Port Congestion'],
+        customs_delay: ['muted', 'Customs'],
+        vehicle_breakdown: ['red', 'Breakdown'],
+        temp_excursion: ['red', 'Temp Excursion'],
+        supplier_outage: ['purple', 'Supplier Outage'],
+      };
+      const [cls, label] = labels[type] || ['muted', type];
+      return `<span class="badge badge-${cls}">${label}</span>`;
+    }
+
+    /* ══════════════════════════════════════════════════════════════════════════
+       Tab navigation
+    ═══════════════════════════════════════════════════════════════════════════*/
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+        if      (btn.dataset.tab === 'shipments')    loadShipments();
+        else if (btn.dataset.tab === 'fleet')        loadFleet();
+        else if (btn.dataset.tab === 'alerts')       loadAlerts();
+        else if (btn.dataset.tab === 'disruptions')  loadDisruptions();
+        else if (btn.dataset.tab === 'telemetry')    loadTelemetry();
+        else if (btn.dataset.tab === 'overview')     initMap();
+      });
+    });
+
+    /* ══════════════════════════════════════════════════════════════════════════
+       Overview — KPIs
+    ═══════════════════════════════════════════════════════════════════════════*/
+    async function loadOverview() {
+      const s = await apiFetch('/api/analytics/summary');
+      document.getElementById('lastSync').textContent = fmtTime(s.generated_at);
+
+      const kpis = [
+        { label: 'Total Shipments', value: s.total_shipments, sub: 'all tracked', cls: 'kpi-accent' },
+        { label: 'In Transit', value: s.in_transit, sub: 'on schedule', cls: 'kpi-green' },
+        { label: 'Delayed', value: s.delayed, sub: 'shipments', cls: 'kpi-yellow' },
+        { label: 'At Risk', value: s.at_risk, sub: 'need action', cls: 'kpi-red' },
+        { label: 'Temp Excursions', value: s.temp_excursions_active, sub: `avg ${s.avg_excursion_duration_min} min`, cls: 'kpi-red' },
+        { label: 'Idle Fleet', value: s.idle_fleet_count, sub: `of ${s.total_fleet} vehicles`, cls: 'kpi-yellow' },
+        { label: 'Fleet Utilisation', value: s.fleet_utilisation_pct + '%', sub: 'active/total', cls: 'kpi-teal' },
+        { label: 'Active Disruptions', value: s.active_disruptions, sub: 'events', cls: 'kpi-purple' },
+        { label: 'Critical Alerts', value: s.critical_alerts, sub: 'unacknowledged', cls: 'kpi-red' },
+      ];
+
+      document.getElementById('kpiRow').innerHTML = kpis.map(k => `
+    <div class="kpi-card">
+      <div class="kpi-label">${k.label}</div>
+      <div class="kpi-value ${k.cls}">${k.value}</div>
+      <div class="kpi-sub">${k.sub}</div>
+    </div>`).join('');
+
+      return s;
+    }
+
+    async function loadCharts() {
+      const [ships, fleet, dis] = await Promise.all([
+        apiFetch('/api/shipments'),
+        apiFetch('/api/fleet'),
+        apiFetch('/api/disruptions?active_only=true'),
+      ]);
+
+      // Shipment status donut
+      const statusCount = {};
+      ships.forEach(s => { statusCount[s.status] = (statusCount[s.status] || 0) + 1; });
+      renderDonut('chartStatus', Object.entries(statusCount).map(([k, v]) => ({
+        name: k.replace('_', ' ').replace(/\b\w/g, c => c.toUpperCase()), value: v,
+        itemStyle: { color: { in_transit: '#2f81f7', delayed: '#d29922', at_risk: '#f85149', delivered: '#3fb950' }[k] || '#8b949e' }
+      })));
+
+      // Temp excursion bar per category
+      const catData = {};
+      ships.forEach(s => {
+        if (!catData[s.product_category]) catData[s.product_category] = { total: 0, exc: 0 };
+        catData[s.product_category].total++;
+        if (s.temp_excursion) catData[s.product_category].exc++;
+      });
+      const cats = Object.keys(catData);
+      renderBar('chartExcursion', cats.map(c => c.charAt(0).toUpperCase() + c.slice(1)),
+        [{ name: 'Normal', data: cats.map(c => catData[c].total - catData[c].exc), color: '#3fb950' },
+        { name: 'Excursion', data: cats.map(c => catData[c].exc), color: '#f85149' }]);
+
+      // Fleet utilisation pie
+      const fstatus = {};
+      fleet.forEach(v => { fstatus[v.status] = (fstatus[v.status] || 0) + 1; });
+      renderDonut('chartFleet', Object.entries(fstatus).map(([k, v]) => ({
+        name: k.charAt(0).toUpperCase() + k.slice(1), value: v,
+        itemStyle: { color: { active: '#3fb950', idle: '#d29922', maintenance: '#a371f7', offline: '#8b949e' }[k] || '#8b949e' }
+      })));
+
+      // Disruption type bar
+      const dtype = {};
+      dis.forEach(d => { dtype[d.type] = (dtype[d.type] || 0) + 1; });
+      const dtypes = Object.keys(dtype);
+      renderBar('chartDisruption', dtypes.map(t => t.replace('_', ' ').replace(/\b\w/g, c => c.toUpperCase())),
+        [{ name: 'Count', data: dtypes.map(t => dtype[t]), color: '#a371f7' }]);
+    }
+
+    function renderDonut(id, data) {
+      const chart = echarts.init(document.getElementById(id), 'dark');
+      chart.setOption({
+        backgroundColor: 'transparent',
+        tooltip: { trigger: 'item', formatter: '{b}: {c} ({d}%)' },
+        legend: { bottom: 0, textStyle: { color: '#8b949e', fontSize: 11 } },
+        series: [{
+          type: 'pie', radius: ['48%', '72%'], center: ['50%', '45%'],
+          label: { show: false }, data,
+          emphasis: { itemStyle: { shadowBlur: 8, shadowColor: 'rgba(0,0,0,0.4)' } }
+        }]
+      });
+    }
+
+    function renderBar(id, categories, series) {
+      const chart = echarts.init(document.getElementById(id), 'dark');
+      chart.setOption({
+        backgroundColor: 'transparent',
+        tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+        legend: { bottom: 0, textStyle: { color: '#8b949e', fontSize: 11 } },
+        grid: { left: 32, right: 12, top: 12, bottom: 40 },
+        xAxis: { type: 'category', data: categories, axisLabel: { color: '#8b949e', fontSize: 11 }, axisLine: { lineStyle: { color: '#30363d' } } },
+        yAxis: { type: 'value', axisLabel: { color: '#8b949e', fontSize: 11 }, splitLine: { lineStyle: { color: '#30363d' } } },
+        series: series.map(s => ({
+          type: 'bar', name: s.name, data: s.data, stack: series.length > 1 ? 'total' : undefined,
+          itemStyle: { color: s.color, borderRadius: [3, 3, 0, 0] }
+        }))
+      });
+    }
+
+    /* ══════════════════════════════════════════════════════════════════════════
+       Shipments tab
+    ═══════════════════════════════════════════════════════════════════════════*/
+    document.getElementById('shipFilter').addEventListener('change', loadShipments);
+    document.getElementById('catFilter').addEventListener('change', loadShipments);
+    document.getElementById('excursionOnly').addEventListener('change', loadShipments);
+
+    // Sort state: col = data-col key, dir = 'asc' | 'desc'
+    let _shipSort = { col: null, dir: 'asc' };
+    let _shipData = [];  // last fetched shipments, re-sorted on header click
+
+    // Attach click listeners to sortable headers once the DOM is ready
+    document.querySelectorAll('#shipmentsTable thead th[data-col]').forEach(th => {
+      th.addEventListener('click', () => {
+        const col = th.dataset.col;
+        if (_shipSort.col === col) {
+          _shipSort.dir = _shipSort.dir === 'asc' ? 'desc' : 'asc';
+        } else {
+          _shipSort.col = col;
+          _shipSort.dir = 'asc';
+        }
+        // Update header arrow indicators
+        document.querySelectorAll('#shipmentsTable thead th[data-col]').forEach(h => {
+          h.classList.remove('sort-asc', 'sort-desc');
+        });
+        th.classList.add(_shipSort.dir === 'asc' ? 'sort-asc' : 'sort-desc');
+        renderShipmentsRows();
+      });
+    });
+
+    function _shipSortValue(s, col) {
+      if (col === 'temperature_c') return s.latest_reading.temperature_c;
+      if (col === 'eta')           return s.eta;
+      if (col === 'temp_excursion') return s.temp_excursion ? 1 : 0;
+      return s[col] ?? '';
+    }
+
+    function renderShipmentsRows() {
+      const data = [..._shipData];
+      if (_shipSort.col) {
+        data.sort((a, b) => {
+          const av = _shipSortValue(a, _shipSort.col);
+          const bv = _shipSortValue(b, _shipSort.col);
+          const cmp = av < bv ? -1 : av > bv ? 1 : 0;
+          return _shipSort.dir === 'asc' ? cmp : -cmp;
+        });
+      }
+      document.getElementById('shipmentsBody').innerHTML = data.map(s => {
+        const t = s.latest_reading.temperature_c;
+        const th = THRESHOLDS[s.product_category] || { min: 0, max: 30 };
+        const tc = tempColor(t, s.product_category);
+        const tw = tempBarWidth(t, s.product_category);
+        const excBadge = s.temp_excursion
+          ? `<span class="badge badge-red">⚠ ${s.excursion_duration_min}m</span>`
+          : `<span class="badge badge-green">OK</span>`;
+        return `
+    <tr>
+      <td><strong>${s.shipment_id}</strong></td>
+      <td>${s.product_name}</td>
+      <td><span class="badge badge-accent">${s.product_category}</span></td>
+      <td style="white-space:nowrap">${s.origin} → ${s.destination}<br><span style="font-size:11px;color:var(--muted)">${s.current_location}</span></td>
+      <td>${s.carrier}</td>
+      <td>${statusBadge(s.status)}</td>
+      <td>
+        <div class="temp-cell">
+          <span class="temp-value" style="color:${tc}">${t.toFixed(1)}°C</span>
+          <div class="temp-bar-bg"><div class="temp-bar-fill" style="width:${tw}%;background:${tc}"></div></div>
+        </div>
+        <div style="font-size:10px;color:var(--muted)">${th.min}°C – ${th.max}°C</div>
+      </td>
+      <td>
+        <div class="progress-bg"><div class="progress-fill" style="width:${s.route_progress_pct}%"></div></div>
+        <div style="font-size:10px;color:var(--muted);margin-top:2px">${s.route_progress_pct}%</div>
+      </td>
+      <td style="white-space:nowrap;font-size:12px">${fmtDate(s.eta)}</td>
+      <td>${excBadge}</td>
+    </tr>`;
+      }).join('');
+    }
+
+    async function loadShipments() {
+      const status = document.getElementById('shipFilter').value;
+      const cat = document.getElementById('catFilter').value;
+      const excOnly = document.getElementById('excursionOnly').checked;
+      let url = '/api/shipments?';
+      if (status) url += `status=${status}&`;
+      if (cat) url += `category=${cat}&`;
+      if (excOnly) url += `excursion_only=true&`;
+
+      document.getElementById('shipmentsBody').innerHTML =
+        '<tr><td colspan="10"><div class="loading-row"><div class="spinner"></div></div></td></tr>';
+
+      const ships = await apiFetch(url);
+
+      if (!ships.length) {
+        _shipData = [];
+        document.getElementById('shipmentsBody').innerHTML =
+          '<tr><td colspan="10"><div class="empty">No shipments match the selected filters.</div></td></tr>';
+        return;
+      }
+
+      _shipData = ships;
+      renderShipmentsRows();
+    }
+
+    /* ══════════════════════════════════════════════════════════════════════════
+       Fleet tab
+    ═══════════════════════════════════════════════════════════════════════════*/
+    document.getElementById('fleetFilter').addEventListener('change', loadFleet);
+
+    async function loadFleet() {
+      const status = document.getElementById('fleetFilter').value;
+      const url = status ? `/api/fleet?status=${status}` : '/api/fleet';
+      document.getElementById('fleetGrid').innerHTML =
+        '<div class="loading-row" style="grid-column:1/-1"><div class="spinner"></div></div>';
+
+      const fleet = await apiFetch(url);
+
+      if (!fleet.length) {
+        document.getElementById('fleetGrid').innerHTML =
+          '<div class="empty" style="grid-column:1/-1">No fleet assets match the filter.</div>';
+        return;
+      }
+
+      document.getElementById('fleetGrid').innerHTML = fleet.map(v => {
+        const fuelColor = v.fuel_pct < 25 ? 'var(--red)' : v.fuel_pct < 50 ? 'var(--yellow)' : 'var(--green)';
+        const idleTag = v.status === 'idle'
+          ? `<span style="font-size:11px;color:var(--yellow)">Idle ${v.idle_duration_min}m</span>` : '';
+        return `
+    <div class="fleet-card">
+      <div class="fleet-vh">${v.vehicle_id}</div>
+      <div class="fleet-type">${v.vehicle_type}</div>
+      <div>${fleetStatusBadge(v.status)} ${idleTag}</div>
+      <div class="fleet-row"><span class="fleet-key">Driver</span><span>${v.driver || '—'}</span></div>
+      <div class="fleet-row"><span class="fleet-key">Location</span><span style="text-align:right">${v.location}</span></div>
+      <div class="fleet-row"><span class="fleet-key">Assigned</span><span>${v.assigned_shipment || '—'}</span></div>
+      <div class="fleet-row"><span class="fleet-key">Mileage</span><span>${v.mileage_km.toLocaleString()} km</span></div>
+      <div class="fleet-row" style="align-items:center">
+        <span class="fleet-key">Fuel ${v.fuel_pct}%</span>
+        <div class="fuel-bar-bg"><div class="fuel-bar-fill" style="width:${v.fuel_pct}%;background:${fuelColor}"></div></div>
+      </div>
+      <div style="font-size:10px;color:var(--muted)">Last active ${timeSince(v.last_active)}</div>
+    </div>`;
+      }).join('');
+    }
+
+    /* ══════════════════════════════════════════════════════════════════════════
+       Alerts tab
+    ═══════════════════════════════════════════════════════════════════════════*/
+    document.getElementById('alertFilter').addEventListener('change', loadAlerts);
+    document.getElementById('unackOnly').addEventListener('change', loadAlerts);
+
+    async function loadAlerts() {
+      const sev = document.getElementById('alertFilter').value;
+      const unack = document.getElementById('unackOnly').checked;
+      let url = '/api/alerts?';
+      if (sev) url += `severity=${sev}&`;
+      if (unack) url += `unacknowledged_only=true&`;
+
+      document.getElementById('alertList').innerHTML =
+        '<div class="loading-row"><div class="spinner"></div></div>';
+
+      const alerts = await apiFetch(url);
+
+      if (!alerts.length) {
+        document.getElementById('alertList').innerHTML =
+          '<div class="empty">No alerts match the selected filters.</div>';
+        return;
+      }
+
+      document.getElementById('alertList').innerHTML = alerts.map(a => `
+    <div class="alert-item" id="alert-${a.alert_id}" style="border-left:3px solid ${{ critical: 'var(--red)', warning: 'var(--yellow)', info: 'var(--accent)' }[a.severity]
+        }">
+      <div class="alert-icon">${severityIcon(a.severity)}</div>
+      <div class="alert-body">
+        <div class="alert-msg">${a.message}</div>
+        <div class="alert-meta">
+          ${a.severity.toUpperCase()} · ${a.type.replace(/_/g, ' ')}
+          ${a.shipment_id ? '· ' + a.shipment_id : ''}
+          ${a.vehicle_id ? '· ' + a.vehicle_id : ''}
+          · ${timeSince(a.timestamp)}
+        </div>
+      </div>
+      <button class="alert-ack ${a.acknowledged ? 'done' : ''}"
+        onclick="ackAlert('${a.alert_id}', this)"
+        ${a.acknowledged ? 'disabled' : ''}>
+        ${a.acknowledged ? '✓ Acked' : 'Acknowledge'}
+      </button>
+    </div>`).join('');
+    }
+
+    async function ackAlert(id, btn) {
+      await apiFetch(`/api/alerts/${id}/acknowledge`);
+      btn.classList.add('done');
+      btn.textContent = '✓ Acked';
+      btn.disabled = true;
+    }
+
+    /* ══════════════════════════════════════════════════════════════════════════
+       Disruptions tab
+    ═══════════════════════════════════════════════════════════════════════════*/
+    document.getElementById('activeDisOnly').addEventListener('change', loadDisruptions);
+
+    async function loadDisruptions() {
+      const activeOnly = document.getElementById('activeDisOnly').checked;
+      const url = activeOnly ? '/api/disruptions?active_only=true' : '/api/disruptions';
+      document.getElementById('disruptionGrid').innerHTML =
+        '<div class="loading-row" style="grid-column:1/-1"><div class="spinner"></div></div>';
+
+      const dis = await apiFetch(url);
+
+      if (!dis.length) {
+        document.getElementById('disruptionGrid').innerHTML =
+          '<div class="empty" style="grid-column:1/-1">No disruption events.</div>';
+        return;
+      }
+
+      document.getElementById('disruptionGrid').innerHTML = dis.map(d => {
+        const impactPct = d.impact_score * 10;
+        const impactColor = d.impact_score >= 8 ? 'var(--red)' : d.impact_score >= 5 ? 'var(--yellow)' : 'var(--green)';
+        return `
+    <div class="dis-card" style="border-left:3px solid ${d.active ? 'var(--red)' : 'var(--border)'}">
+      <div class="dis-header">
+        <div class="dis-title">${d.disruption_id} — ${d.region}</div>
+        <span class="badge ${d.active ? 'badge-red' : 'badge-muted'}">${d.active ? 'Active' : 'Resolved'}</span>
+      </div>
+      ${disruptionBadge(d.type)}
+      <div style="margin-top:8px" class="dis-desc">${d.description}</div>
+      <div class="dis-meta">
+        <span>Impact Score: <strong style="color:${impactColor}">${d.impact_score}/10</strong></span>
+        <div class="impact-bar-bg"><div class="impact-bar-fill" style="width:${impactPct}%;background:${impactColor}"></div></div>
+        <span>Affected: ${d.affected_shipments.length > 0 ? d.affected_shipments.join(', ') : 'None'}</span>
+        <span>Started: ${timeSince(d.started_at)}</span>
+        <span>Est. Resolution: ${fmtDate(d.estimated_resolution)}</span>
+      </div>
+    </div>`;
+      }).join('');
+    }
+
+    /* ══════════════════════════════════════════════════════════════════════════
+       Live telemetry tab
+    ═══════════════════════════════════════════════════════════════════════════*/
+    const tempHistory = [];          // {time, temp, shipment_id}
+    const catCounts = {};          // {category: count}
+    let chartTempLive = null;
+    let chartCatLive = null;
+
+    let _telemetryInited = false;
+
+    function initTelemetryCharts() {
+      if (_telemetryInited) {
+        // Panel was hidden when charts were first created — resize to actual dimensions
+        chartTempLive && chartTempLive.resize();
+        chartCatLive  && chartCatLive.resize();
+        return;
+      }
+      _telemetryInited = true;
+
+      chartTempLive = echarts.init(document.getElementById('chartTempLive'), 'dark');
+      chartTempLive.setOption({
+        backgroundColor: 'transparent',
+        tooltip: { trigger: 'axis' },
+        grid: { left: 40, right: 16, top: 12, bottom: 40 },
+        xAxis: { type: 'category', data: [], axisLabel: { color: '#8b949e', fontSize: 10 }, axisLine: { lineStyle: { color: '#30363d' } } },
+        yAxis: { type: 'value', axisLabel: { color: '#8b949e', fontSize: 10 }, splitLine: { lineStyle: { color: '#30363d' } }, name: '°C', nameTextStyle: { color: '#8b949e', fontSize: 10 } },
+        series: [{
+          name: 'Temp (°C)', type: 'line', smooth: true, data: [],
+          lineStyle: { color: '#2f81f7', width: 2 }, areaStyle: { color: 'rgba(47,129,247,0.08)' },
+          symbol: 'circle', symbolSize: 4, itemStyle: { color: '#2f81f7' }
+        }]
+      });
+
+      chartCatLive = echarts.init(document.getElementById('chartCatLive'), 'dark');
+      updateCatChart();
+
+      // Resize after the panel becomes visible (it was display:none at boot)
+      requestAnimationFrame(() => {
+        chartTempLive && chartTempLive.resize();
+        chartCatLive  && chartCatLive.resize();
+      });
+    }
+
+    function updateTempChart() {
+      const times = tempHistory.slice(-20).map(h => h.time);
+      const temps = tempHistory.slice(-20).map(h => +h.temp.toFixed(2));
+      chartTempLive && chartTempLive.setOption({ xAxis: { data: times }, series: [{ data: temps }] });
+    }
+
+    function updateCatChart() {
+      const cats = Object.keys(catCounts);
+      const vals = cats.map(c => catCounts[c]);
+      const colors = { refrigerated: '#2f81f7', frozen: '#39c5cf', pharma: '#a371f7', ambient: '#3fb950' };
+      if (!chartCatLive) return;
+      chartCatLive.setOption({
+        backgroundColor: 'transparent',
+        tooltip: { trigger: 'item', formatter: '{b}: {c}' },
+        legend: { bottom: 0, textStyle: { color: '#8b949e', fontSize: 11 } },
+        series: [{
+          type: 'pie', radius: ['40%', '70%'], center: ['50%', '45%'],
+          label: { show: false },
+          data: cats.map(c => ({
+            name: c.charAt(0).toUpperCase() + c.slice(1), value: vals[cats.indexOf(c)],
+            itemStyle: { color: colors[c] || '#8b949e' }
+          }))
+        }]
+      });
+    }
+
+    // Telemetry counters
+    let _telTotal = 0, _telExcursions = 0;
+    const _telSensors = new Set();
+
+    /* loadTelemetry — called on first (and every) tab open.
+       Seeds the feed, KPI counters, and charts from /api/shipments
+       so the user sees real data instantly, before the next WS push. */
+    async function loadTelemetry() {
+      initTelemetryCharts();   // no-op after first call except resize
+
+      let ships;
+      try {
+        ships = await apiFetch('/api/shipments');
+      } catch (e) {
+        console.error('Telemetry pre-load failed:', e);
+        return;
+      }
+
+      // Remove the waiting placeholder
+      const ph = document.getElementById('feedPlaceholder');
+      if (ph) ph.remove();
+
+      // Seed feed rows (newest-first — reverse API order)
+      [...ships].reverse().forEach(s => {
+        const r   = s.latest_reading;
+        const t   = r.temperature_c;
+        const exc = s.temp_excursion;
+        const excColor = exc ? 'var(--red)' : 'var(--green)';
+        const tag      = exc ? 'EXCURSION'  : 'OK';
+        const excLabel = exc ? ` ⚠ EXCURSION (${s.excursion_duration_min}m)` : '';
+        appendFeedItem(
+          `${s.shipment_id} · ${s.product_name} · ` +
+          `<strong style="color:${excColor}">${t.toFixed(2)}°C</strong> · ` +
+          `Humidity ${r.humidity_pct}% · 🔋${r.battery_pct}%` +
+          `${excLabel}`,
+          excColor, tag
+        );
+      });
+
+      // Seed KPI counters and charts from fetched readings
+      ships.forEach(s => {
+        const r  = s.latest_reading;
+        const fakeMsg = {
+          shipment_id: s.shipment_id,
+          category:    s.product_category,
+          temp_excursion: s.temp_excursion,
+          reading: r,
+        };
+        _telTotal++;
+        if (s.temp_excursion) _telExcursions++;
+        _telSensors.add(s.shipment_id);
+
+        const time = new Date(r.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        tempHistory.push({ time, temp: r.temperature_c, shipment_id: s.shipment_id });
+        catCounts[s.product_category] = (catCounts[s.product_category] || 0) + 1;
+      });
+
+      // Update DOM KPI cards
+      document.getElementById('telTotal').textContent      = _telTotal;
+      document.getElementById('telExcursions').textContent = _telExcursions;
+      document.getElementById('telSensors').textContent    = _telSensors.size;
+      const last = ships[ships.length - 1];
+      if (last) {
+        document.getElementById('telLastShip').textContent = last.shipment_id;
+        document.getElementById('telLastTemp').textContent =
+          last.latest_reading.temperature_c.toFixed(1) + '°C · ' + last.product_category;
+      }
+      const ws_lbl = document.getElementById('telWsStatus');
+      if (ws_lbl) ws_lbl.textContent = 'Pre-loaded · live updates every 5 s';
+
+      // Render charts with seeded data
+      updateTempChart();
+      updateCatChart();
+    }
+
+    function _updateTelStats(d) {
+      _telTotal++;
+      if (d.temp_excursion) _telExcursions++;
+      _telSensors.add(d.shipment_id);
+      document.getElementById('telTotal').textContent      = _telTotal;
+      document.getElementById('telExcursions').textContent = _telExcursions;
+      document.getElementById('telSensors').textContent    = _telSensors.size;
+      document.getElementById('telLastShip').textContent   = d.shipment_id;
+      document.getElementById('telLastTemp').textContent   = d.reading.temperature_c.toFixed(1) + '°C · ' + d.category;
+      // Update WS status label
+      const ws_lbl = document.getElementById('telWsStatus');
+      if (ws_lbl) ws_lbl.textContent = 'Live · last: ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    }
+
+    function clearFeed() {
+      const feed = document.getElementById('feedWrap');
+      feed.innerHTML = '';
+      // Restore placeholder
+      const ph = document.createElement('div');
+      ph.id = 'feedPlaceholder';
+      ph.style.cssText = 'display:flex;align-items:center;justify-content:center;height:100%;color:var(--muted);font-size:13px;gap:10px;';
+      ph.innerHTML = '<div class="spinner"></div> Feed cleared — waiting for next reading…';
+      feed.appendChild(ph);
+    }
+
+    function appendFeedItem(msg, color, tag) {
+      const feed = document.getElementById('feedWrap');
+      const item = document.createElement('div');
+      item.className = 'feed-item';
+      item.innerHTML = `
+    <span class="feed-time">${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</span>
+    <span class="feed-tag" style="color:${color}">[${tag}]</span>
+    <span class="feed-msg">${msg}</span>`;
+      feed.insertBefore(item, feed.firstChild);
+      if (feed.children.length > 100) feed.removeChild(feed.lastChild);
+    }
+
+    /* ══════════════════════════════════════════════════════════════════════════
+       WebSocket
+    ═══════════════════════════════════════════════════════════════════════════*/
+    function connectWS() {
+      const proto = location.protocol === 'https:' ? 'wss' : 'ws';
+      const wsUrl = `${proto}://${location.host}/ws/telemetry`;
+      const ws = new WebSocket(wsUrl);
+      const dot = document.getElementById('wsDot');
+      const label = document.getElementById('wsLabel');
+
+      ws.onopen = () => {
+        dot.style.background = 'var(--green)';
+        label.textContent = 'Connected';
+      };
+
+      ws.onmessage = (evt) => {
+        const d = JSON.parse(evt.data);
+        if (d.event !== 'iot_reading') return;
+
+        const t = d.reading.temperature_c;
+        const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        tempHistory.push({ time, temp: t, shipment_id: d.shipment_id });
+        catCounts[d.category] = (catCounts[d.category] || 0) + 1;
+
+        updateTempChart();
+        updateCatChart();
+
+        const excTag = d.temp_excursion ? ' ⚠ EXCURSION' : '';
+        const excColor = d.temp_excursion ? 'var(--red)' : 'var(--green)';
+        const tag = d.temp_excursion ? 'EXCURSION' : 'OK';
+
+        // Remove waiting placeholder on first real message
+        const ph = document.getElementById('feedPlaceholder');
+        if (ph) ph.remove();
+
+        appendFeedItem(
+          `${d.shipment_id} · ${d.product} · <strong style="color:${excColor}">${t.toFixed(2)}°C</strong> · Humidity ${d.reading.humidity_pct}% · 🔋${d.reading.battery_pct}%${excTag}`,
+          excColor, tag
+        );
+
+        _updateTelStats(d);
+        document.getElementById('lastSync').textContent = time;
+      };
+
+      ws.onerror = () => {
+        dot.style.background = 'var(--yellow)';
+        label.textContent = 'WS Error';
+      };
+
+      ws.onclose = () => {
+        dot.style.background = 'var(--muted)';
+        label.textContent = 'Reconnecting…';
+        setTimeout(connectWS, 3000);
+      };
+    }
+    let map;
+
+    function initMap() {
+      const mapContainer = document.getElementById('map');
+      if (!mapContainer || map) return;
+
+      // Initialize Leaflet Map
+      map = L.map('map').setView([20.5937, 78.9629], 5);
+
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; CARTO',
+        subdomains: 'abcd',
+        maxZoom: 19
+      }).addTo(map);
+
+      // Recalculate container dimensions
+      setTimeout(() => map.invalidateSize(), 200);
+
+      renderShipmentMarkers();
+    }
+
+    async function renderShipmentMarkers() {
+      if (!map) return;
+      try {
+        const shipments = await apiFetch('/api/shipments');
+        shipments.forEach(s => {
+          if (s.latest_reading && s.latest_reading.latitude && s.latest_reading.longitude) {
+            const color = s.temp_excursion ? '#ef4444' : '#3b82f6';
+            L.circleMarker([s.latest_reading.latitude, s.latest_reading.longitude], {
+              color: color,
+              fillColor: color,
+              fillOpacity: 0.8,
+              radius: 8
+            }).addTo(map).bindPopup(`<b>${s.shipment_id}</b><br>${s.product_name}<br>Temp: ${s.latest_reading.temperature_c}°C`);
+          }
+        });
+      } catch (err) {
+        console.error('Failed to render map markers:', err);
+      }
+    }
+
+    // Call on page load
+    document.addEventListener('DOMContentLoaded', initMap);
+
+    window.addEventListener('resize', () => {
+      echarts.getInstanceByDom(document.getElementById('chartStatus'))?.resize();
+      echarts.getInstanceByDom(document.getElementById('chartExcursion'))?.resize();
+      echarts.getInstanceByDom(document.getElementById('chartFleet'))?.resize();
+      echarts.getInstanceByDom(document.getElementById('chartDisruption'))?.resize();
+      chartTempLive?.resize();
+      chartCatLive?.resize();
+    });
+
+    /* ══════════════════════════════════════════════════════════════════════════
+       Boot
+    ═══════════════════════════════════════════════════════════════════════════*/
+    (async () => {
+      try {
+        await loadOverview();
+        await loadCharts();
+      } catch (e) {
+        console.error('Overview load failed:', e);
+      }
+
+      initTelemetryCharts();
+      connectWS();
+
+      // Polling fallback: refresh KPIs every 30 s
+      setInterval(async () => {
+        try { await loadOverview(); } catch (_) { }
+      }, 30000);
+    })();
+
+
+  </script>
+</body>
+
+</html>

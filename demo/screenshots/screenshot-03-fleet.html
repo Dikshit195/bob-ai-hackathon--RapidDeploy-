@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>RapidDeploy — Fleet Assets (Screenshot)</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0d1117;--surface:#161b22;--card:#1c2128;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--accent:#2f81f7;--green:#3fb950;--yellow:#d29922;--red:#f85149;--purple:#a371f7;--teal:#39c5cf;--radius:8px}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,"Segoe UI",system-ui,sans-serif;font-size:14px;line-height:1.5}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:56px;background:var(--surface);border-bottom:1px solid var(--border)}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:16px}
+.status{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted)}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--green)}
+.tab-nav{display:flex;gap:2px;padding:0 24px;background:var(--surface);border-bottom:1px solid var(--border)}
+.tab{padding:10px 18px;border:none;background:transparent;color:var(--muted);font-size:13px;border-bottom:2px solid transparent}
+.tab.active{color:var(--text);border-bottom-color:var(--accent)}
+.main{padding:20px 24px}
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.section-title{font-size:16px;font-weight:600}
+.section-actions{display:flex;gap:10px;align-items:center}
+.filter-select{background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:5px 10px;font-size:12px}
+.refresh-btn{background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:5px 12px;font-size:12px}
+.fleet-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.fleet-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px;display:flex;flex-direction:column;gap:6px}
+.fleet-vh{font-weight:700;font-size:15px}
+.fleet-type{font-size:11px;color:var(--muted)}
+.fleet-row{display:flex;justify-content:space-between;font-size:12px}
+.fleet-key{color:var(--muted)}
+.fuel-bar-bg{background:var(--border);border-radius:2px;height:4px;flex:1;margin-left:8px}
+.fuel-bar-fill{height:100%;border-radius:2px}
+.badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600}
+.badge-green{background:rgba(63,185,80,.15);color:var(--green)}
+.badge-yellow{background:rgba(210,153,34,.15);color:var(--yellow)}
+.badge-purple{background:rgba(163,113,247,.15);color:var(--purple)}
+.badge-muted{background:rgba(139,148,158,.15);color:var(--muted)}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <svg width="26" height="26" viewBox="0 0 26 26" fill="none"><rect width="26" height="26" rx="6" fill="#2f81f7"/><path d="M5 18l5-5 4 4 7-9" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    RapidDeploy
+    <span style="font-weight:400;color:var(--muted);font-size:12px">Supply Chain &amp; Cold-Chain Operations</span>
+  </div>
+  <div class="status">
+    <span class="dot"></span>
+    <span style="color:var(--green);font-weight:600">Connected</span>
+    <span style="font-size:11px;color:var(--muted)">Last sync: 14:32:07</span>
+  </div>
+</header>
+<nav class="tab-nav">
+  <button class="tab">Overview</button>
+  <button class="tab">Active Shipments</button>
+  <button class="tab active">Fleet Assets</button>
+  <button class="tab">Alerts</button>
+  <button class="tab">Disruptions</button>
+  <button class="tab">Live Telemetry</button>
+</nav>
+<main class="main">
+  <div class="section-header">
+    <span class="section-title">Fleet Assets</span>
+    <div class="section-actions">
+      <select class="filter-select"><option>All Statuses</option><option>Active</option><option>Idle</option><option>Maintenance</option><option>Offline</option></select>
+      <button class="refresh-btn">↻ Refresh</button>
+    </div>
+  </div>
+  <div class="fleet-grid">
+    <!-- Active vehicles -->
+    <div class="fleet-card">
+      <div class="fleet-vh">VH-101</div><div class="fleet-type">Refrigerated Truck</div>
+      <div><span class="badge badge-green">Active</span></div>
+      <div class="fleet-row"><span class="fleet-key">Driver</span><span>Ramesh Kumar</span></div>
+      <div class="fleet-row"><span class="fleet-key">Location</span><span>Surat</span></div>
+      <div class="fleet-row"><span class="fleet-key">Assigned</span><span>SH-001</span></div>
+      <div class="fleet-row"><span class="fleet-key">Mileage</span><span>142,300 km</span></div>
+      <div class="fleet-row" style="align-items:center"><span class="fleet-key">Fuel 85%</span><div class="fuel-bar-bg"><div class="fuel-bar-fill" style="width:85%;background:var(--green)"></div></div></div>
+      <div style="font-size:10px;color:var(--muted)">Last active 12m ago</div>
+    </div>
+    <div class="fleet-card">
+      <div class="fleet-vh">VH-102</div><div class="fleet-type">Freezer Van</div>
+      <div><span class="badge badge-green">Active</span> <span style="font-size:11px;color:var(--yellow)">⚠ Breakdown</span></div>
+      <div class="fleet-row"><span class="fleet-key">Driver</span><span>Suresh Patel</span></div>
+      <div class="fleet-row"><span class="fleet-key">Location</span><span>Vellore</span></div>
+      <div class="fleet-row"><span class="fleet-key">Assigned</span><span>SH-002</span></div>
+      <div class="fleet-row"><span class="fleet-key">Mileage</span><span>98,140 km</span></div>
+      <div class="fleet-row" style="align-items:center"><span class="fleet-key">Fuel 60%</span><div class="fuel-bar-bg"><div class="fuel-bar-fill" style="width:60%;background:var(--yellow)"></div></div></div>
+      <div style="font-size:10px;color:var(--muted)">Last active 3m ago</div>
+    </div>
+    <div class="fleet-card">
+      <div class="fleet-vh">VH-103</div><div class="fleet-type">Pharma Reefer</div>
+      <div><span class="badge badge-green">Active</span></div>
+      <div class="fleet-row"><span class="fleet-key">Driver</span><span>Anil Sharma</span></div>
+      <div class="fleet-row"><span class="fleet-key">Location</span><span>Bhubaneswar</span></div>
+      <div class="fleet-row"><span class="fleet-key">Assigned</span><span>SH-003</span></div>
+      <div class="fleet-row"><span class="fleet-key">Mileage</span><span>76,800 km</span></div>
+      <div class="fleet-row" style="align-items:center"><span class="fleet-key">Fuel 90%</span><div class="fuel-bar-bg"><div class="fuel-bar-fill" style="width:90%;background:var(--green)"></div></div></div>
+      <div style="font-size:10px;color:var(--muted)">Last active 8m ago</div>
+    </div>
+    <div class="fleet-card">
+      <div class="fleet-vh">VH-104</div><div class="fleet-type">Standard Truck</div>
+      <div><span class="badge badge-green">Active</span></div>
+      <div class="fleet-row"><span class="fleet-key">Driver</span><span>Priya Singh</span></div>
+      <div class="fleet-row"><span class="fleet-key">Location</span><span>Lonavala</span></div>
+      <div class="fleet-row"><span class="fleet-key">Assigned</span><span>SH-004</span></div>
+      <div class="fleet-row"><span class="fleet-key">Mileage</span><span>113,400 km</span></div>
+      <div class="fleet-row" style="align-items:center"><span class="fleet-key">Fuel 75%</span><div class="fuel-bar-bg"><div class="fuel-bar-fill" style="width:75%;background:var(--green)"></div></div></div>
+      <div style="font-size:10px;color:var(--muted)">Last active 2m ago</div>
+    </div>
+    <div class="fleet-card">
+      <div class="fleet-vh">VH-105</div><div class="fleet-type">Refrigerated Truck</div>
+      <div><span class="badge badge-green">Active</span></div>
+      <div class="fleet-row"><span class="fleet-key">Driver</span><span>Vijay Rao</span></div>
+      <div class="fleet-row"><span class="fleet-key">Location</span><span>Udaipur</span></div>
+      <div class="fleet-row"><span class="fleet-key">Assigned</span><span>SH-005</span></div>
+      <div class="fleet-row"><span class="fleet-key">Mileage</span><span>205,600 km</span></div>
+      <div class="fleet-row" style="align-items:center"><span class="fleet-key">Fuel 55%</span><div class="fuel-bar-bg"><div class="fuel-bar-fill" style="width:55%;background:var(--yellow)"></div></div></div>
+      <div style="font-size:10px;color:var(--muted)">Last active 5m ago</div>
+    </div>
+    <!-- Idle vehicles -->
+    <div class="fleet-card" style="border-color:rgba(210,153,34,.3)">
+      <div class="fleet-vh">VH-111</div><div class="fleet-type">Standard Truck</div>
+      <div><span class="badge badge-yellow">Idle</span> <span style="font-size:11px;color:var(--yellow)">Idle 95m</span></div>
+      <div class="fleet-row"><span class="fleet-key">Driver</span><span>—</span></div>
+      <div class="fleet-row"><span class="fleet-key">Location</span><span>Mumbai Depot</span></div>
+      <div class="fleet-row"><span class="fleet-key">Assigned</span><span>—</span></div>
+      <div class="fleet-row"><span class="fleet-key">Mileage</span><span>88,200 km</span></div>
+      <div class="fleet-row" style="align-items:center"><span class="fleet-key">Fuel 30%</span><div class="fuel-bar-bg"><div class="fuel-bar-fill" style="width:30%;background:var(--red)"></div></div></div>
+      <div style="font-size:10px;color:var(--muted)">Last active 1h 35m ago</div>
+    </div>
+    <div class="fleet-card" style="border-color:rgba(210,153,34,.3)">
+      <div class="fleet-vh">VH-112</div><div class="fleet-type">Refrigerated Truck</div>
+      <div><span class="badge badge-yellow">Idle</span> <span style="font-size:11px;color:var(--yellow)">Idle 210m</span></div>
+      <div class="fleet-row"><span class="fleet-key">Driver</span><span>—</span></div>
+      <div class="fleet-row"><span class="fleet-key">Location</span><span>Delhi Depot</span></div>
+      <div class="fleet-row"><span class="fleet-key">Assigned</span><span>—</span></div>
+      <div class="fleet-row"><span class="fleet-key">Mileage</span><span>167,000 km</span></div>
+      <div class="fleet-row" style="align-items:center"><span class="fleet-key">Fuel 50%</span><div class="fuel-bar-bg"><div class="fuel-bar-fill" style="width:50%;background:var(--yellow)"></div></div></div>
+      <div style="font-size:10px;color:var(--muted)">Last active 3h 30m ago</div>
+    </div>
+    <!-- Maintenance -->
+    <div class="fleet-card" style="border-color:rgba(163,113,247,.3)">
+      <div class="fleet-vh">VH-114</div><div class="fleet-type">Pharma Reefer</div>
+      <div><span class="badge badge-purple">Maintenance</span></div>
+      <div class="fleet-row"><span class="fleet-key">Driver</span><span>—</span></div>
+      <div class="fleet-row"><span class="fleet-key">Location</span><span>Bangalore HQ</span></div>
+      <div class="fleet-row"><span class="fleet-key">Assigned</span><span>—</span></div>
+      <div class="fleet-row"><span class="fleet-key">Mileage</span><span>231,500 km</span></div>
+      <div class="fleet-row" style="align-items:center"><span class="fleet-key">Fuel 20%</span><div class="fuel-bar-bg"><div class="fuel-bar-fill" style="width:20%;background:var(--red)"></div></div></div>
+      <div style="font-size:10px;color:var(--muted)">Last active 8h ago</div>
+    </div>
+  </div>
+</main>
+</body>
+</html>
