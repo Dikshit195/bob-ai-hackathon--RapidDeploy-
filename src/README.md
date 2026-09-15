@@ -1,47 +1,54 @@
-# Source Code
+# Source Code — RapidDeploy
 
-Place all your project's source code in this folder.
+Supply Chain & Cold-Chain Operations Dashboard.
 
-## Structure Guidelines
+## Project Layout
 
-Organize your code logically. Here are common patterns — use whatever fits
-your project:
-
-### Web Application
 ```
-src/
-  backend/        ← API server code
-  frontend/       ← UI code
-  shared/         ← Shared utilities/types
-```
-
-### Data / AI Project
-```
-src/
-  data/           ← Data ingestion / preprocessing
-  models/         ← ML model code
-  api/            ← Serving layer
-  notebooks/      ← Jupyter notebooks (exploration)
-```
-
-### CLI / Script-based Tool
-```
-src/
-  cli/            ← CLI entry points
-  lib/            ← Core logic
-  utils/          ← Helpers
+/                           ← Repo root
+├── main.py                 ← FastAPI application (API + WebSocket server)
+├── static/
+│   └── index.html          ← Single-page dashboard (vanilla HTML / JS / CSS)
+├── src/
+│   ├── README.md           ← This file
+│   └── .env.example        ← Environment variable template
+├── docs/
+│   ├── architecture.md     ← System architecture overview
+│   ├── setup-guide.md      ← How to run locally
+│   ├── problem-statement.md
+│   └── solution-overview.md
+├── demo/                   ← Screenshots and demo video link
+├── presentation/           ← Slide deck
+├── test_main.py            ← pytest test suite
+└── submission.yaml         ← Hackathon submission metadata
 ```
 
-## Important Files to Include
+## Backend — `main.py`
 
-- `requirements.txt` or `package.json` — dependency manifest
-- `.env.example` — template for environment variables (NEVER commit `.env`)
-- Any database migration files
-- Configuration files
+Single-file FastAPI app. Key sections:
 
-## What NOT to Include in src/
+| Section | What it does |
+|---|---|
+| Enums / constants | `ShipmentStatus`, `FleetStatus`, `AlertSeverity`, `DisruptionType`, temperature thresholds |
+| Pydantic models | `IoTReading`, `Shipment`, `FleetAsset`, `Alert`, `DisruptionEvent`, `AnalyticsSummary` |
+| Seed data helpers | `_build_shipments()`, `_build_fleet()`, `_build_alerts()`, `_build_disruptions()` |
+| WebSocket manager | `_ConnectionManager` + `_telemetry_emitter()` background task (5 s interval) |
+| REST routes | `GET /api/shipments`, `/api/fleet`, `/api/alerts`, `/api/disruptions`, `/api/analytics/summary` |
+| WebSocket route | `WS /ws/telemetry` — live IoT reading push to all connected clients |
+| Static files | `static/` mounted at `/` (catch-all, served last) |
 
-- `.env` files with real secrets
-- Large binary files (use Git LFS or link externally)
-- `node_modules/` or `venv/` (these are in `.gitignore`)
-- Build artifacts (`dist/`, `build/`, `__pycache__/`)
+## Frontend — `static/index.html`
+
+Vanilla HTML + JavaScript single-page dashboard. Tabs:
+
+- **Dashboard** — KPI cards, fleet summary, top alerts
+- **Shipments** — sortable table of all active shipments with excursion badges
+- **Fleet** — fleet asset list with status indicators
+- **Alerts** — filterable alert feed with one-click acknowledgement
+- **Disruptions** — supply-chain disruption events with impact score bars
+- **Live Telemetry** — real-time IoT temperature/humidity line chart (WebSocket feed)
+
+## Environment Variables
+
+Copy `src/.env.example` → `.env` in the repo root and fill in your values.
+See [`docs/setup-guide.md`](../docs/setup-guide.md) for full setup instructions.
